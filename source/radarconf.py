@@ -154,7 +154,8 @@ for ii in range(3, Sn):
             b_vector[i,aux] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
 
         #intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix, b=b_vector)
-    
+    print(b_vector)
+    print(W_matrix)
     mooore_penrose_solution_par(W = W_matrix, 
         b_set = b_vector, 
         pnum = 10, 
