@@ -62,7 +62,11 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(len(K), 3)
         np.testing.assert_array_almost_equal(K, np.array([np.sqrt(3*1), np.sqrt(3*4), np.sqrt(3*9)]))
         
+    def test_k0(self):
 
+        A = k0(el0=50, az0=270)
+
+        np.testing.assert_array_almost_equal(np.array(A), np.array([-0.642788, 0, 0.76604]), decimal=4)
 
 if __name__ == '__main__':
     unittest.main()

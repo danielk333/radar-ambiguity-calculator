@@ -88,7 +88,7 @@ def permutations_create(permutations_base, intersections_ind, k_length, permutat
 
     return list(itertools.product(*iterables))
 
-#TODO test function k0
+
 def k0(el0, az0):
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
