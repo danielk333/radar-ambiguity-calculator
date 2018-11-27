@@ -1,6 +1,7 @@
 from scipy.constants import speed_of_light as c # [m/s]
 from scipy.constants import pi as pi
 import numpy as np
+import itertools
 
 
 def lambda0(frequency):
@@ -30,6 +31,7 @@ def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
     return r, R, rho
 
 
+#TODO Am I really using this function somewhere?
 def spherical_angle(theta, phi):
 
     return [np.cos(theta) * np.sin(phi)], [np.sin(theta) * np.sin(phi)], [np.cos(phi)]
@@ -49,6 +51,43 @@ def nvec_j(j, R):
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
 
+def mooore_penrose_solution (W, b):
+
+    Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
+    intersection_line= np.dot(np.linalg.pinv(W), b)[:, 0]
+    pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
+
+    return intersection_line, pinv_norm
+
+
+def intersections_cal (pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs):
+
+    intersections = dict()
+
+    if 'norm' in kwargs:
+        intersections['indexes'] = np.where(
+            (pinv_norm < mp_tol) & (kwargs['norm'] <= 2) & (kwargs['norm'] != 0))
+    else:
+        intersections['indexes'] = np.where(pinv_norm < mp_tol)
+
+    intersections['number'] = len(intersections['indexes'][0])
+    intersections['permutations'] = np.array(PERMS_J)[intersections['indexes'][0]]
+
+    integers = (
+        np.repeat(np.transpose(R)[:, :, np.newaxis], repeats=intersections['number'], axis=2)[:, :, None] * np.reshape(
+            intersection_line[:, intersections['indexes'][0]], (3, 1, intersections['number']))).sum(axis=1)
+
+    intersections['integers'] = np.reshape(integers, (np.shape(integers)[0], intersections['number']))
+
+    return intersections
+
+
+def permutations_create(permutations_base, intersections_ind, k_length, permutation_index):
+    iterables = [np.array(permutations_base)[intersections_ind[0], :], range(1, int(k_length[permutation_index]) + 1)]
+
+    return list(itertools.product(*iterables))
+
+
 def k0(el0, az0):
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
@@ -57,7 +96,8 @@ def k0(el0, az0):
 
 def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang):
 
-    cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - intersection_line[0:2, intersections_ind]
+    cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - \
+          intersection_line[0:2, intersections_ind]
     cap = np.sqrt(np.sum(cap ** 2, axis=0))
     cap = np.where(cap <= np.sin(cutoff_ph_ang))
 

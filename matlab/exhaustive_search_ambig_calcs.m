@@ -165,7 +165,7 @@ for i=1:Sn
     rho(:,:,i) = r(:,:,i) - repmat(R(:,i),1,Zn);
 end
 
-
+foo = 1;
 
 
 k=@(th,ph) [cos(th).*sin(ph); sin(th).*sin(ph); cos(ph)];
