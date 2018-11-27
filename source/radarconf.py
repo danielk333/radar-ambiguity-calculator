@@ -112,11 +112,6 @@ intersections = intersections_cal(pinv_norm=pinv_norm, mp_tol=mp_tol, PERMS_J=PE
 SURVIVORS = np.zeros((Sn - 2, 1))
 SURVIVORS[0] = intersections['number']
 
-# Dictionary of elements to export as JSON:
-# - intersections
-# - SURVIVORS
-# - PERMS_J
-
 print('Done with first three permutations')
 
 
