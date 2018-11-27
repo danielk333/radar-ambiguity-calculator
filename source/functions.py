@@ -48,13 +48,14 @@ def p0_jk(j, k, R, n0, K):
 
 
 def nvec_j(j, R):
+
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
 
 def mooore_penrose_solution (W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
-    intersection_line= np.dot(np.linalg.pinv(W), b)[:, 0]
+    intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
     pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
 
     return intersection_line, pinv_norm
