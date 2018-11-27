@@ -36,22 +36,22 @@ def spherical_angle(theta, phi):
 
     return [np.cos(theta) * np.sin(phi)], [np.sin(theta) * np.sin(phi)], [np.cos(phi)]
 
-
+#TODO test function linCoeff_cal
 def linCoeff_cal(R):
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
 
-
+#TODO test function p0_jk
 def p0_jk(j, k, R, n0, K):
 
     return (n0[j] + 1 - k) / K[j] / np.linalg.norm(R[:, j], axis=0) * R[:, j]
 
-
+#TODO test function nvec_j
 def nvec_j(j, R):
 
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
-
+#TODO test function moore_penrose_solution
 def mooore_penrose_solution (W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
@@ -88,13 +88,13 @@ def permutations_create(permutations_base, intersections_ind, k_length, permutat
 
     return list(itertools.product(*iterables))
 
-
+#TODO test function k0
 def k0(el0, az0):
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
         np.radians(el0)), np.sin(np.radians(el0))]
 
-
+#TODO test function slines_intersections
 def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang):
 
     cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - \
@@ -104,50 +104,26 @@ def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang
 
     return cap
 
+# TODO test function explicit
+def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, xy, k0):
+    s_sel = intersection_line[:, intersections_ind[cap_intersections_of_slines]]
 
-# FIXME check at symmetries and improve for performance
+    aux1 = np.repeat([[k0[0]], [k0[1]]], repeats=np.shape(s_sel)[1], axis=1) - s_sel[0:2, :]
+    aux2 = np.sqrt(1 - aux1[0, :] ** 2 - aux1[1, :] ** 2)
 
-class AmbiguityDistances:
-    def __init__(self, intersections_integers_complete):
-        self.intersections_integers_complete = intersections_integers_complete
+    k_finds = np.vstack((aux1, aux2))
 
-    def int_form_mat(self):
+    subgroup_signal_k0 = np.exp(-1j * 2 * pi * (xy[:, 0] * k0[0] + xy[:, 1] * k0[1]))
+    subgroup_signal = np.exp(-1j * 2 * pi * (
+            np.transpose(np.repeat([xy[:, 0]], repeats=np.shape(k_finds)[1], axis=0)) * np.repeat(
+        [k_finds[0, :]], repeats=np.shape(xy)[0], axis=0) + np.transpose(np.repeat([xy[:, 1]], repeats=np.shape(
+        k_finds)[1], axis=0)) * np.repeat([k_finds[1, :]], repeats=np.shape(xy)[0], axis=0)))
 
-        return np.abs(self.intersections_integers_complete - np.round(self.intersections_integers_complete))
+    ambiguity_distances_explicit = np.linalg.norm(np.transpose(np.repeat([subgroup_signal_k0], repeats=np.shape(
+        k_finds)[1], axis=0)) - subgroup_signal, axis=0)
 
-    def int_form_mean(self):
+    ambiguity_normal_explicit = (np.transpose(np.repeat([subgroup_signal_k0], repeats=np.shape(
+        k_finds)[1], axis=0)) - subgroup_signal) / np.repeat([ambiguity_distances_explicit], repeats=np.shape(
+        subgroup_signal)[0], axis=0)
 
-        return np.mean(self.int_form_mat(), axis=0)
-
-    def wave_form_mat(self):
-
-        return np.exp(1j * 2 * pi * self.intersections_integers_complete) - np.exp(1j * 2 * pi * np.round(
-            self.intersections_integers_complete))
-
-    def wave_form(self):
-
-        return np.sqrt(np.sum(self.wave_form_mat() * np.conjugate(self.wave_form_mat()), axis=0)).real
-
-    def explicit(self, intersection_line, intersections_ind, cap_intersections_of_slines, xy, k0):
-
-        s_sel = intersection_line[:, intersections_ind[cap_intersections_of_slines]]
-
-        aux1 = np.repeat([[k0[0]], [k0[1]]], repeats=np.shape(s_sel)[1], axis=1) - s_sel[0:2, :]
-        aux2 = np.sqrt(1 - aux1[0, :] ** 2 - aux1[1, :] ** 2)
-
-        k_finds = np.vstack((aux1, aux2))
-
-        subgroup_signal_k0 = np.exp(-1j * 2 * pi * (xy[:, 0] * k0[0] + xy[:, 1] * k0[1]))
-        subgroup_signal = np.exp(-1j * 2 * pi * (
-                np.transpose(np.repeat([xy[:, 0]], repeats=np.shape(k_finds)[1], axis=0)) * np.repeat(
-            [k_finds[0, :]], repeats=np.shape(xy)[0], axis=0) + np.transpose(np.repeat([xy[:, 1]], repeats=np.shape(
-            k_finds)[1], axis=0)) * np.repeat([k_finds[1, :]], repeats=np.shape(xy)[0], axis=0)))
-
-        ambiguity_distances_explicit = np.linalg.norm(np.transpose(np.repeat([subgroup_signal_k0], repeats=np.shape(
-            k_finds)[1], axis=0)) - subgroup_signal, axis=0)
-
-        ambiguity_normal_explicit = (np.transpose(np.repeat([subgroup_signal_k0], repeats=np.shape(
-            k_finds)[1], axis=0)) - subgroup_signal) / np.repeat([ambiguity_distances_explicit], repeats=np.shape(
-            subgroup_signal)[0], axis=0)
-
-        return ambiguity_distances_explicit, ambiguity_normal_explicit
+    return ambiguity_distances_explicit, ambiguity_normal_explicit

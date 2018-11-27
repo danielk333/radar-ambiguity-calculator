@@ -6,7 +6,6 @@ import itertools
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 from time import time
-import dill
 
 # put latex in figures
 from matplotlib import rc
@@ -119,7 +118,6 @@ SURVIVORS[0] = intersections['number']
 # - PERMS_J
 
 print('Done with first three permutations')
-dill.dump_session('../processed_data/'+radar+'3.pkl')
 
 
 for ii in range(3, Sn):
@@ -169,6 +167,13 @@ intersections_last = intersections['number']
 intersections_integers_complete = np.vstack((np.zeros(
     (1, np.shape(intersections['integers'])[1])), intersections['integers']))
 
+AmbiguityDistances = dict()
+AmbiguityDistances['int_form_mat'] = np.abs(intersections_integers_complete - np.round(intersections_integers_complete))
+AmbiguityDistances['int_form_mean'] = np.mean(AmbiguityDistances['int_form_mat'], axis=0)
+AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integers_complete) - \
+                                      np.exp(1j * 2 * pi * np.round(intersections_integers_complete))
+AmbiguityDistances['wave_form'] = np.sqrt(np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
+
 k0 = k0(el0=50, az0=270)
 
 cutoff_ph_ang = pi/2
@@ -180,13 +185,12 @@ cap_intersections_of_slines = slines_intersections(
 
 # From knowing what lines intercept with cap, find al possible DOA ambigs that are part of this
 
-distance, normal = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).explicit(intersection_line=intersection_line, intersections_ind=intersections['indexes'][0], cap_intersections_of_slines=cap_intersections_of_slines, xy=xycoords, k0=k0)
+ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection_line=intersection_line, intersections_ind=intersections['indexes'][0], cap_intersections_of_slines=cap_intersections_of_slines, xy=xycoords, k0=k0)
 
 print('Done with all other permutations')
-dill.dump_session(radar+'.pkl')
 
 ## PLOTS
-
+# TODO do the convhull part
 fig1, ax1 = plt.subplots()
 ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s = 85, alpha=0.85, marker='o', label='Sensor position')
 ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
