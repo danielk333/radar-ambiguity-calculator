@@ -53,7 +53,14 @@ class TestFunctions(unittest.TestCase):
         np.testing.assert_array_equal(np.array(np.shape(R)), np.array([3, Sn]))
         np.testing.assert_array_equal(np.array(np.shape(rho)), np.array(np.shape(r)))
 
+    def test_linCoeff_cal(self):
 
+        R = np.array([[1, 2, 3], [1, 2, 3], [1, 2, 3]])
+
+        K = linCoeff_cal(R)
+
+        self.assertEqual(len(K), 3)
+        np.testing.assert_array_almost_equal(K, np.array([np.sqrt(3*1), np.sqrt(3*4), np.sqrt(3*9)]))
         
 
 

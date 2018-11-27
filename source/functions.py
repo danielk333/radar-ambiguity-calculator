@@ -36,7 +36,7 @@ def spherical_angle(theta, phi):
 
     return [np.cos(theta) * np.sin(phi)], [np.sin(theta) * np.sin(phi)], [np.cos(phi)]
 
-#TODO test function linCoeff_cal
+
 def linCoeff_cal(R):
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
