@@ -2,7 +2,7 @@ from scipy.constants import speed_of_light as c # [m/s]
 from scipy.constants import pi as pi
 import numpy as np
 import itertools
-
+import multiprocessing as mp
 
 def lambda0(frequency):
 
@@ -50,12 +50,65 @@ def p0_jk(j, k, R, n0, K):
 def nvec_j(j, R):
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
+def generate_b():
+    W_matrix = np.transpose(R[:, 0:ii+1] / np.tile(np.linalg.norm(R[:, 0:ii+1], axis=0), (3, 1)))
 
-def mooore_penrose_solution (W, b):
+#pointer version
+def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
+    for ind in ind_range:
+        b = b_set[:,ind].view()
+
+        Moore_Penrose_solution_check = np.linalg.multi_dot([W, Wpinv, b]) - b
+        intersection_line_set[:,ind] = np.dot(Wpinv, b)
+        pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
+
+
+#this wraps mooore_penrose_solution to do parallel calculations
+def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
+    #b_set is a matrix with columns as the vectors
+    #
+    #maybe we should use generators all the way here but its 
+    #too intrecate too include now
+    #maybe at a later stage if memory footprint is a problem
+
+    Wpinv = np.linalg.pinv(W)
+
+    threads = []
+
+    job_id = 0
+    if niter % pnum == 0:
+        subset = niter/pnum
+    else:
+        subset = niter//pnum + 1
+
+    while job_id*subset < niter:
+        for i in range(pnum):
+            if (job_id+1)*subset > niter:
+                job_range = range(job_id*subset, niter)
+            else:
+                job_range = range(job_id*subset, (job_id+1)*subset)
+            
+            t = mp.Process(target=mooore_penrose_solution_ptr, 
+                        args=[W, 
+                           Wpinv, 
+                           b_set, 
+                           intersection_line_set, 
+                           pinv_norm_set, 
+                           job_range])
+            threads.append(t)
+            t.start()
+            job_id+=1
+
+    for t in threads:
+        t.join()
+
+
+
+def mooore_penrose_solution(W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
-    intersection_line= np.dot(np.linalg.pinv(W), b)[:, 0]
-    pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
+    intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
+    pinv_norm = np.linalg.norm(Moore_Penrose_solution_check)
 
     return intersection_line, pinv_norm
 

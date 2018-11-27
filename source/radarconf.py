@@ -6,7 +6,7 @@ import itertools
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 from time import time
-import dill
+#import dill
 
 # put latex in figures
 from matplotlib import rc
@@ -118,8 +118,8 @@ SURVIVORS[0] = intersections['number']
 # - SURVIVORS
 # - PERMS_J
 
-print('Done with first three permutations')
-dill.dump_session('../processed_data/'+radar+'3.pkl')
+#print('Done with first three permutations')
+#dill.dump_session('../processed_data/'+radar+'3.pkl')
 
 
 for ii in range(3, Sn):
@@ -146,19 +146,22 @@ for ii in range(3, Sn):
     intersection_line = np.zeros((3, PERMS_number))
 
     PERMS_J_prime = []
+    b_vector = np.zeros((len(I), PERMS_number))
 
     for aux, j in enumerate(PERMS_J):
-
         PERMS_J_prime.append(np.hstack((j[0], j[1])))
-
-        b_vector = np.zeros((len(I), 1))
-
         for i in I:
+            b_vector[i,aux] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
 
-            b_vector[i] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
-
-        intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix, b=b_vector)
-
+        #intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix, b=b_vector)
+    
+    mooore_penrose_solution_par(W = W_matrix, 
+        b_set = b_vector, 
+        pnum = 10, 
+        niter = PERMS_number, 
+        intersection_line_set = intersection_line, 
+        pinv_norm_set = pinv_norm)
+    
     PERMS_J = PERMS_J_prime
 
     intersections = intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R)
@@ -182,8 +185,8 @@ cap_intersections_of_slines = slines_intersections(
 
 distance, normal = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).explicit(intersection_line=intersection_line, intersections_ind=intersections['indexes'][0], cap_intersections_of_slines=cap_intersections_of_slines, xy=xycoords, k0=k0)
 
-print('Done with all other permutations')
-dill.dump_session(radar+'.pkl')
+#print('Done with all other permutations')
+#dill.dump_session(radar+'.pkl')
 
 ## PLOTS
 
@@ -217,7 +220,7 @@ ax3.set_aspect('equal')
 fig4 = plt.figure()
 ax4 = fig4.gca(projection='3d')
 for S_ind in range(0, len(intersections['indexes'][0])):
-    print('Starting Sind %1d of %1d \n' % (S_ind, len(intersections['indexes'][0])))
+    #print('Starting Sind %1d of %1d \n' % (S_ind, len(intersections['indexes'][0])))
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
     s_line = np.repeat(np.transpose([s_point]), repeats=100, axis=1)
     s_line[2, :] = np.linspace(start=-np.sqrt(4 - np.dot(s_point, s_point)), stop=np.sqrt(4 - np.dot(s_point, s_point)), num=100, endpoint=True)
