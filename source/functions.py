@@ -2,7 +2,7 @@ from scipy.constants import speed_of_light as c # [m/s]
 from scipy.constants import pi as pi
 import numpy as np
 import itertools
-import multiprocessing as mp
+import threading
 
 def lambda0(frequency):
 
@@ -62,7 +62,6 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
         intersection_line_set[:,ind] = np.dot(Wpinv, b)
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
 
-
 #this wraps mooore_penrose_solution to do parallel calculations
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
     #b_set is a matrix with columns as the vectors
@@ -88,7 +87,7 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
             else:
                 job_range = range(job_id*subset, (job_id+1)*subset)
             
-            t = mp.Process(target=mooore_penrose_solution_ptr, 
+            t = threading.Thread(target=mooore_penrose_solution_ptr, 
                         args=[W, 
                            Wpinv, 
                            b_set, 
@@ -98,6 +97,8 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
             threads.append(t)
             t.start()
             job_id+=1
+
+
 
     for t in threads:
         t.join()
