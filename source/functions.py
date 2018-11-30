@@ -52,10 +52,6 @@ def nvec_j(j, R):
 
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
-def generate_b():
-    W_matrix = np.transpose(R[:, 0:ii+1] / np.tile(np.linalg.norm(R[:, 0:ii+1], axis=0), (3, 1)))
-    return W_matrix
-
 
 # pointer version
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
