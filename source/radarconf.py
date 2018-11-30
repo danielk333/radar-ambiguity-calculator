@@ -208,7 +208,7 @@ ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection
 print('Done with all other permutations')
 
 ## PLOTS
-# TODO do the convhull part
+# TODO Ask Daniel about the Convhull part
 fig1, ax1 = plt.subplots()
 ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s = 85, alpha=0.85, marker='o', label='Sensor position')
 ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
