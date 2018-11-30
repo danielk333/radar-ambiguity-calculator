@@ -47,7 +47,6 @@ def p0_jk(j, k, R, n0, K):
     return (n0[j] + 1 - k) / K[j] / np.linalg.norm(R[:, j], axis=0) * R[:, j]
 
 
-# TODO test function nvec_j
 def nvec_j(j, R):
 
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)

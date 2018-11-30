@@ -81,6 +81,14 @@ class TestFunctions(unittest.TestCase):
         np.testing.assert_array_almost_equal(a, np.array([0.178885438199983, 0.357770876399966]), decimal=8)
 
 
+    def test_nvec_j(self):
+
+        j = 1
+        R = np.array([[1, 2], [3, 4]])
+
+        a = nvec_j(j, R)
+
+        np.testing.assert_array_almost_equal(a, np.array([0.447213595499958, 0.894427190999916]), decimal=8)
 
 if __name__ == '__main__':
     unittest.main()
