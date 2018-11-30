@@ -103,7 +103,16 @@ class TestFunctions(unittest.TestCase):
         np.testing.assert_array_almost_equal(distances, np.array([0.6602832, 1.66250775]), decimal=8)
         np.testing.assert_array_almost_equal(normal, np.array([[0.67249851-0.21850801j, -0.27059805+0.65328148j], [0.67249851+0.21850801j, -0.27059805-0.65328148j]]), decimal=8)
 
+    def test_slines_intersections(self):
 
+        k0 = [0.15, 0.20]
+        intersections_ind = [0, 2, 4]
+        intersection_line = np.array([[.1, .2, .3, .4, .5], [.6, .7, .8, .9, .8], [.7, .6, .5, .4, .3], [.2, .1, .2, .3, .4]])
+        cutoff_ph_ang = np.radians(40)
+
+        cap = slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang)
+
+        np.testing.assert_array_equal(cap, np.array([[0, 1]]))
 
 
 if __name__ == '__main__':

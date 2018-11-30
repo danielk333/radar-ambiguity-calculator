@@ -140,7 +140,7 @@ def k0(el0, az0):
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
         np.radians(el0)), np.sin(np.radians(el0))]
 
-#TODO test function slines_intersections
+
 def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang):
 
     cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - \
