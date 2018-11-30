@@ -64,9 +64,23 @@ class TestFunctions(unittest.TestCase):
         
     def test_k0(self):
 
-        A = k0(el0=50, az0=270)
+        a = k0(el0=50, az0=270)
 
-        np.testing.assert_array_almost_equal(np.array(A), np.array([-0.642788, 0, 0.76604]), decimal=4)
+        np.testing.assert_array_almost_equal(np.array(a), np.array([-0.642788, 0, 0.76604]), decimal=4)
+
+    def test_p0_jk(self):
+
+        j = 1
+        k = 1
+        R = np.array([[1, 2], [3, 4]])
+        n0 = np.array([1, 2, 3])
+        K = np.array([4, 5, 6])
+
+        a = p0_jk(j, k, R, n0, K)
+
+        np.testing.assert_array_almost_equal(a, np.array([0.178885438199983, 0.357770876399966]), decimal=8)
+
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -57,7 +57,12 @@ Zn = np.shape(zpos)[1]
 Sn = np.shape(zpos)[0] - 1
 
 ##
-r, R, rho = rRrho_cal(sensor_groups=Sn, subgroup_size=Zn, xycoords=xycoords, xpos=xpos, ypos=ypos, zpos=zpos)
+r, R, rho = rRrho_cal(sensor_groups=Sn,
+                      subgroup_size=Zn,
+                      xycoords=xycoords,
+                      xpos=xpos,
+                      ypos=ypos,
+                      zpos=zpos)
 
 # Calculate linear coefficients
 
@@ -98,7 +103,8 @@ for aux, j in enumerate(PERMS_J):
     for i in I:
         b_vector[i] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], j[i], R, n0, K))
 
-    intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix, b=b_vector)
+    intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix,
+                                                                        b=b_vector)
 
 show3 = False
 
@@ -109,23 +115,16 @@ if show3 is True:
 # Choose out from all possible combinations the one that are valid
 intersection_line_norm = np.transpose(np.sqrt([np.sum(intersection_line ** 2, axis=0)]))
 
-intersections = intersections_cal(pinv_norm=pinv_norm, mp_tol=mp_tol, PERMS_J=PERMS_J, intersection_line=intersection_line, R=R, norm=intersection_line_norm)
+intersections = intersections_cal(pinv_norm=pinv_norm,
+                                  mp_tol=mp_tol,
+                                  PERMS_J=PERMS_J,
+                                  intersection_line=intersection_line,
+                                  R=R, norm=intersection_line_norm)
 
 SURVIVORS = np.zeros((Sn - 2, 1))
 SURVIVORS[0] = intersections['number']
 
-
-# Dictionary of elements to export as JSON:
-# - intersections
-# - SURVIVORS
-# - PERMS_J
-
-#print('Done with first three permutations')
-#dill.dump_session('../processed_data/'+radar+'3.pkl')
-
 print('Done with first three permutations')
-
-
 
 for ii in range(3, Sn):
 
@@ -141,7 +140,10 @@ for ii in range(3, Sn):
         'Starting plane intersections for new sensor %1d of %1d with %1d permutations on %1d remaining solutions \n' % (
             ii, Sn-1, PERMS_number, intersections['number']))
 
-    PERMS_J = permutations_create(permutations_base=PERMS_J_base, intersections_ind=intersections['indexes'], k_length=k_length, permutation_index=ii)
+    PERMS_J = permutations_create(permutations_base=PERMS_J_base,
+                                  intersections_ind=intersections['indexes'],
+                                  k_length=k_length,
+                                  permutation_index=ii)
 
     I = range(0, ii+1)
 
@@ -158,14 +160,12 @@ for ii in range(3, Sn):
         for i in I:
             b_vector[i,aux] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
 
-        #intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix, b=b_vector)
-
-    mooore_penrose_solution_par(W = W_matrix, 
-        b_set = b_vector, 
-        pnum = 10, 
-        niter = PERMS_number, 
-        intersection_line_set = intersection_line, 
-        pinv_norm_set = pinv_norm)
+    mooore_penrose_solution_par(W=W_matrix,
+                                b_set=b_vector,
+                                pnum=10,
+                                niter=PERMS_number,
+                                intersection_line_set=intersection_line,
+                                pinv_norm_set=pinv_norm)
 
     PERMS_J = PERMS_J_prime
 
@@ -182,7 +182,8 @@ AmbiguityDistances['int_form_mat'] = np.abs(intersections_integers_complete - np
 AmbiguityDistances['int_form_mean'] = np.mean(AmbiguityDistances['int_form_mat'], axis=0)
 AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integers_complete) - \
                                       np.exp(1j * 2 * pi * np.round(intersections_integers_complete))
-AmbiguityDistances['wave_form'] = np.sqrt(np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
+AmbiguityDistances['wave_form'] = np.sqrt(np.sum(AmbiguityDistances['wave_form_mat'] * \
+                                                 np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
 
 k0 = k0(el0=50, az0=270)
 
@@ -191,11 +192,16 @@ cutoff_ph_ang = pi/2
 # Find all s-lines that intersect with the cap by range check
 
 cap_intersections_of_slines = slines_intersections(
-    k0=k0, intersections_ind = intersections['indexes'][0], intersection_line=intersection_line, cutoff_ph_ang = cutoff_ph_ang)
+    k0=k0, intersections_ind = intersections['indexes'][0],
+    intersection_line=intersection_line,
+    cutoff_ph_ang = cutoff_ph_ang)
 
 # From knowing what lines intercept with cap, find al possible DOA ambigs that are part of this
 
-ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection_line=intersection_line, intersections_ind=intersections['indexes'][0], cap_intersections_of_slines=cap_intersections_of_slines, xy=xycoords, k0=k0)
+ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection_line=intersection_line,
+                                                                    intersections_ind=intersections['indexes'][0],
+                                                                    cap_intersections_of_slines=cap_intersections_of_slines,
+                                                                    xy=xycoords, k0=k0)
 
 print('Done with all other permutations')
 
@@ -231,10 +237,13 @@ ax3.set_aspect('equal')
 fig4 = plt.figure()
 ax4 = fig4.gca(projection='3d')
 for S_ind in range(0, len(intersections['indexes'][0])):
-    #print('Starting Sind %1d of %1d \n' % (S_ind, len(intersections['indexes'][0])))
+
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
     s_line = np.repeat(np.transpose([s_point]), repeats=100, axis=1)
-    s_line[2, :] = np.linspace(start=-np.sqrt(4 - np.dot(s_point, s_point)), stop=np.sqrt(4 - np.dot(s_point, s_point)), num=100, endpoint=True)
+    s_line[2, :] = np.linspace(start=-np.sqrt(4 - np.dot(s_point, s_point)),
+                               stop=np.sqrt(4 - np.dot(s_point, s_point)),
+                               num=100,
+                               endpoint=True)
     if S_ind == 25:
         ax4.plot(s_line[0, :], s_line[1, :], s_line[2, :], '.r')
     else:

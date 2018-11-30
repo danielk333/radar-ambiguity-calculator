@@ -31,7 +31,7 @@ def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
     return r, R, rho
 
 
-#TODO Am I really using this function somewhere?
+# TODO Am I really using this function somewhere?
 def spherical_angle(theta, phi):
 
     return [np.cos(theta) * np.sin(phi)], [np.sin(theta) * np.sin(phi)], [np.cos(phi)]
@@ -41,19 +41,23 @@ def linCoeff_cal(R):
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
 
-#TODO test function p0_jk
+
 def p0_jk(j, k, R, n0, K):
 
     return (n0[j] + 1 - k) / K[j] / np.linalg.norm(R[:, j], axis=0) * R[:, j]
 
-#TODO test function nvec_j
+
+# TODO test function nvec_j
 def nvec_j(j, R):
 
+    return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
 def generate_b():
     W_matrix = np.transpose(R[:, 0:ii+1] / np.tile(np.linalg.norm(R[:, 0:ii+1], axis=0), (3, 1)))
+    return W_matrix
 
-#pointer version
+
+# pointer version
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
     for ind in ind_range:
         b = b_set[:,ind].view()
@@ -64,11 +68,11 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
 
 #this wraps mooore_penrose_solution to do parallel calculations
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
-    #b_set is a matrix with columns as the vectors
+    # b_set is a matrix with columns as the vectors
     #
-    #maybe we should use generators all the way here but its 
-    #too intrecate too include now
-    #maybe at a later stage if memory footprint is a problem
+    # maybe we should use generators all the way here but its
+    # too intrecate too include now
+    # maybe at a later stage if memory footprint is a problem
 
     Wpinv = np.linalg.pinv(W)
 
@@ -98,28 +102,16 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
             t.start()
             job_id+=1
 
-
-
     for t in threads:
         t.join()
 
 
-
-def mooore_penrose_solution(W, b):
-
-    Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
-    intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
-    pinv_norm = np.linalg.norm(Moore_Penrose_solution_check)
-
-    return R[:, j] / np.linalg.norm(R[:, j], axis=0)
-
-#TODO test function moore_penrose_solution
+# TODO test function moore_penrose_solution
 def mooore_penrose_solution (W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
     intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
     pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
-
 
     return intersection_line, pinv_norm
 
