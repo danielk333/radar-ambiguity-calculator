@@ -4,6 +4,7 @@ import numpy as np
 import itertools
 import threading
 
+
 def lambda0(frequency):
 
     return c * 1e-6 / frequency
@@ -31,12 +32,6 @@ def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
     return r, R, rho
 
 
-# TODO Am I really using this function somewhere?
-def spherical_angle(theta, phi):
-
-    return [np.cos(theta) * np.sin(phi)], [np.sin(theta) * np.sin(phi)], [np.cos(phi)]
-
-
 def linCoeff_cal(R):
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
@@ -52,13 +47,14 @@ def nvec_j(j, R):
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
 
+# TODO test function for this section
 # pointer version
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
     for ind in ind_range:
-        b = b_set[:,ind].view()
+        b = b_set[:, ind].view()
 
         Moore_Penrose_solution_check = np.linalg.multi_dot([W, Wpinv, b]) - b
-        intersection_line_set[:,ind] = np.dot(Wpinv, b)
+        intersection_line_set[:, ind] = np.dot(Wpinv, b)
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
 
 #this wraps mooore_penrose_solution to do parallel calculations
@@ -154,8 +150,9 @@ def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang
 
     return cap
 
-# TODO test function explicit
+
 def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, xy, k0):
+
     s_sel = intersection_line[:, intersections_ind[cap_intersections_of_slines]]
 
     aux1 = np.repeat([[k0[0]], [k0[1]]], repeats=np.shape(s_sel)[1], axis=1) - s_sel[0:2, :]

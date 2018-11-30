@@ -3,6 +3,7 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from functions import *
 import itertools
+from scipy.constants import pi as pi
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 from time import time
@@ -182,8 +183,8 @@ AmbiguityDistances['int_form_mat'] = np.abs(intersections_integers_complete - np
 AmbiguityDistances['int_form_mean'] = np.mean(AmbiguityDistances['int_form_mat'], axis=0)
 AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integers_complete) - \
                                       np.exp(1j * 2 * pi * np.round(intersections_integers_complete))
-AmbiguityDistances['wave_form'] = np.sqrt(np.sum(AmbiguityDistances['wave_form_mat'] * \
-                                                 np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
+AmbiguityDistances['wave_form'] = np.sqrt(
+    np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
 
 k0 = k0(el0=50, az0=270)
 
@@ -191,17 +192,18 @@ cutoff_ph_ang = pi/2
 
 # Find all s-lines that intersect with the cap by range check
 
-cap_intersections_of_slines = slines_intersections(
-    k0=k0, intersections_ind = intersections['indexes'][0],
-    intersection_line=intersection_line,
-    cutoff_ph_ang = cutoff_ph_ang)
+cap_intersections_of_slines = slines_intersections(k0=k0,
+                                                   intersections_ind=intersections['indexes'][0],
+                                                   intersection_line=intersection_line,
+                                                   cutoff_ph_ang=cutoff_ph_ang)
 
 # From knowing what lines intercept with cap, find al possible DOA ambigs that are part of this
 
 ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection_line=intersection_line,
                                                                     intersections_ind=intersections['indexes'][0],
                                                                     cap_intersections_of_slines=cap_intersections_of_slines,
-                                                                    xy=xycoords, k0=k0)
+                                                                    xy=xycoords,
+                                                                    k0=k0)
 
 print('Done with all other permutations')
 

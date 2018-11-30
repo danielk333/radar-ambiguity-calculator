@@ -90,5 +90,21 @@ class TestFunctions(unittest.TestCase):
 
         np.testing.assert_array_almost_equal(a, np.array([0.447213595499958, 0.894427190999916]), decimal=8)
 
+    def test_explicit(self):
+
+        intersection_line = np.array([[.1, .2, .3, 1], [.4, .5, .6, .2], [.7, .8, .9, .13]])
+        intersections_ind = np.array([0, 2, 3])
+        cap_intersections_of_slines = [0, 2]
+        xy = np.array([[-0.25, 0.25], [0.25, -0.25]])
+        k0 = [.8, .15]
+
+        distances, normal = explicit(intersection_line, intersections_ind, cap_intersections_of_slines, xy, k0)
+
+        np.testing.assert_array_almost_equal(distances, np.array([0.6602832, 1.66250775]), decimal=8)
+        np.testing.assert_array_almost_equal(normal, np.array([[0.67249851-0.21850801j, -0.27059805+0.65328148j], [0.67249851+0.21850801j, -0.27059805-0.65328148j]]), decimal=8)
+
+
+
+
 if __name__ == '__main__':
     unittest.main()
