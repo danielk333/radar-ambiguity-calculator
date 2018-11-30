@@ -21,35 +21,16 @@ class TestFunctions(unittest.TestCase):
         intersections = intersections_cal(pinv_norm=pinv_norm, mp_tol=0.1, PERMS_J=PERMS_J, \
                                           intersection_line=intersection_line, R=R, norm=intersection_line_norm)
 
-        try:
-            np.testing.assert_array_equal(intersections['indexes'], [[0, 4]])
-            res = True
-        except AssertionError as err:
-            res = False
-            print(err)
-
-        self.assertTrue(res)
-
-        try:
-            np.testing.assert_array_equal(intersections['permutations'], [PERMS_J[0], PERMS_J[4]])
-            res1 = True
-        except AssertionError as err1:
-            res1 = False
-            print(err1)
-
-        self.assertTrue(res1)
-
+        np.testing.assert_array_equal(intersections['indexes'], [[0, 4]])
+        np.testing.assert_array_equal(intersections['permutations'], [PERMS_J[0], PERMS_J[4]])
         self.assertEqual(intersections['number'], 2)
         self.assertEqual(np.shape(intersections['integers'])[1], 2)
 
     def test_permutations_create(self):
 
         PERMS_J_base = [[1, 1, 1], [1, 1, 2], [1, 1, 3], [1, 1, 4]]
-
         indexes = [[1, 3], [0, 0]]
-
         k_length = [2, 3]
-
         ii = 1
 
         PERMS_J = permutations_create(permutations_base=PERMS_J_base, intersections_ind=indexes, k_length=k_length, \
@@ -68,33 +49,24 @@ class TestFunctions(unittest.TestCase):
 
         r, R, rho = rRrho_cal(sensor_groups=Sn, subgroup_size=Zn, xycoords=xycoords, xpos=xpos, ypos=ypos, zpos=zpos)
 
-        try:
-            np.testing.assert_array_equal(np.array(np.shape(r)), np.array([3, Zn, Sn]))
-            res0 = True
-        except AssertionError as err0:
-            res0 = False
-            print(err0)
+        np.testing.assert_array_equal(np.array(np.shape(r)), np.array([3, Zn, Sn]))
+        np.testing.assert_array_equal(np.array(np.shape(R)), np.array([3, Sn]))
+        np.testing.assert_array_equal(np.array(np.shape(rho)), np.array(np.shape(r)))
 
-        self.assertTrue(res0)
+    def test_linCoeff_cal(self):
 
-        try:
-            np.testing.assert_array_equal(np.array(np.shape(R)), np.array([3, Sn]))
-            res1 = True
-        except AssertionError as err1:
-            res1 = False
-            print(err1)
+        R = np.array([[1, 2, 3], [1, 2, 3], [1, 2, 3]])
 
-        self.assertTrue(res1)
+        K = linCoeff_cal(R)
 
-        try:
-            np.testing.assert_array_equal(np.array(np.shape(rho)), np.array(np.shape(r)))
-            res2 = True
-        except AssertionError as err2:
-            res2 = False
-            print(err2)
+        self.assertEqual(len(K), 3)
+        np.testing.assert_array_almost_equal(K, np.array([np.sqrt(3*1), np.sqrt(3*4), np.sqrt(3*9)]))
+        
+    def test_k0(self):
 
-        self.assertTrue(res2)
+        A = k0(el0=50, az0=270)
 
+        np.testing.assert_array_almost_equal(np.array(A), np.array([-0.642788, 0, 0.76604]), decimal=4)
 
 if __name__ == '__main__':
     unittest.main()
