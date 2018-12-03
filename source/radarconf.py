@@ -24,7 +24,7 @@ mp_tol = 1e-1
 gain_yagi = 7.24
 gain_yagi_base = 10**(gain_yagi/10)
 
-radar = 'JONES'
+radar = 'JICAMARCA'
 
 if radar == 'JONES':
     lambda0 = lambda0(frequency=31)
@@ -32,7 +32,7 @@ if radar == 'JONES':
 elif radar == 'JICAMARCA':
     lambda0 = lambda0(frequency=31)
     d = 144
-    xycoords = np.array([[-d/lambda0/2, -d-lambda0/2],
+    xycoords = np.array([[-d/lambda0/2, -d/lambda0/2],
                 [d/lambda0/2, -d/lambda0/2],
                 [d/lambda0/2, d/lambda0/2],
                 [-(36+36/2)/lambda0, (36*3+36/2)/lambda0],
