@@ -57,6 +57,7 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
         intersection_line_set[:, ind] = np.dot(Wpinv, b)
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
 
+
 #this wraps mooore_penrose_solution to do parallel calculations
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
     # b_set is a matrix with columns as the vectors

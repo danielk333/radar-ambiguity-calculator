@@ -7,8 +7,7 @@ from scipy.constants import pi as pi
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 from time import time
-
-#import dill
+import h5py
 
 # put latex in figures
 from matplotlib import rc
@@ -24,7 +23,7 @@ mp_tol = 1e-1
 gain_yagi = 7.24
 gain_yagi_base = 10**(gain_yagi/10)
 
-radar = 'JICAMARCA'
+radar = 'JONES'
 
 if radar == 'JONES':
     lambda0 = lambda0(frequency=31)
@@ -66,18 +65,15 @@ r, R, rho = rRrho_cal(sensor_groups=Sn,
                       zpos=zpos)
 
 # Calculate linear coefficients
-
 K = linCoeff_cal(R=R)
 
 # Calculate base numbers
-
 n0 = np.floor(2 * K)
 
 # K's from 1 to *no + 1
 k_length = 2 * n0 + 1
 
 # Create all possible permutations from 3 first sets of planes
-
 PERMS_number = np.prod(k_length[0:3])
 
 iterables3 = [range(1, int(k_length[0])+1), range(1, int(k_length[1])+1), range(1, int(k_length[2])+1)]
@@ -89,13 +85,12 @@ print('First intersection calculation: %1d permutations of 3 planes \n' % PERMS_
 
 I = ([0, 1, 2])
 
-# Start looping over all combinations
-
 W_matrix = np.transpose(R[:, 0:3]/np.tile(np.linalg.norm(R[:, 0:3], axis=0), (3, 1)))
 
 pinv_norm = np.zeros((int(PERMS_number), 1))
 intersection_line = np.zeros((3, int(PERMS_number)))
 
+# Start looping over all combinations
 
 for aux, j in enumerate(PERMS_J):
 
@@ -126,6 +121,12 @@ SURVIVORS = np.zeros((Sn - 2, 1))
 SURVIVORS[0] = intersections['number']
 
 print('Done with first three permutations')
+
+# with h5py.File('../processed_data/JONES3.h5', 'w') as hdf:
+#     hdf.create_dataset('intersections', data=str(intersections))
+#     hdf.create_dataset('SURVIVORS', data=SURVIVORS)
+#     hdf.create_dataset('PERMS_J', data=PERMS_J)
+
 
 for ii in range(3, Sn):
 
@@ -159,7 +160,7 @@ for ii in range(3, Sn):
     for aux, j in enumerate(PERMS_J):
         PERMS_J_prime.append(np.hstack((j[0], j[1])))
         for i in I:
-            b_vector[i,aux] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
+            b_vector[i, aux] = -np.dot(nvec_j(I[i], R), p0_jk(I[i], np.hstack((j[0], j[1]))[i], R, n0, K))
 
     mooore_penrose_solution_par(W=W_matrix,
                                 b_set=b_vector,
@@ -254,6 +255,36 @@ ax4.set_xlabel(r'$s_{x} \ [1]$', fontsize=12)
 ax4.set_ylabel(r'$s_{y} \ [1]$', fontsize=12)
 ax4.set_zlabel(r'$s_{z} \ [1]$', fontsize=12)
 ax4.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+
+fig5, ax5 = plt.subplots()
+for S_ind in range(0, len(intersections['indexes'][0])):
+    s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
+    ax5.scatter(s_point[0], s_point[1], s = 40, c=(0, 0, 1))
+    plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
+ax5.grid(which='both')
+ax5.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
+ax5.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
+ax5.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+ax5.set_aspect('equal')
+
+circ_cutoff_ph_ang_x = np.sin(cutoff_ph_ang) * np.cos(np.linspace(start=0, stop=2*pi, num=100))
+circ_cutoff_ph_ang_y = np.sin(cutoff_ph_ang) * np.sin(np.linspace(start=0, stop=2*pi, num=100))
+
+fig6 = plt.figure()
+ax61 = plt.subplot(1, 2, 1)
+for S_ind in range(0, len(intersections['indexes'][0])):
+    s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
+    ax61.scatter(s_point[0], s_point[1], s = 40, c=(0, 0, 1))
+    plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
+ax61.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
+ax61.grid(which='both')
+ax61.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
+ax61.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
+ax61.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+ax61.set_aspect('equal')
+
+ax62 = plt.subplot(1, 2, 2)
+ax62.set_aspect('equal')
 
 
 # waveform = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).wave_form()
