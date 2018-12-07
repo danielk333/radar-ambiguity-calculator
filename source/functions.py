@@ -4,8 +4,7 @@ import numpy as np
 import itertools
 import threading
 
-
-def lambda0(frequency):
+def lambda_cal(frequency):
 
     """
     Calculates the wave length of electromagnetic radiation given its frequency.
@@ -15,6 +14,39 @@ def lambda0(frequency):
     """
 
     return c * 1e-6 / frequency
+
+def radar_conf(radar_name):
+
+    if radar_name == 'JONES':
+        freq = 31
+        lambda0 = lambda_cal(frequency=freq)
+        xycoords = np.array([[0, 2],
+                             [0, -2.5],
+                             [-2, 0],
+                             [2.5, 0],
+                             [0, 0]])
+    elif radar_name == 'symmetric1':
+        freq = 31
+        d = 3
+        lambda0 = lambda_cal(frequency=freq)
+        xycoords = np.array([[d, 0],
+                             [-d, 0],
+                             [0, d],
+                             [0, -d],
+                             [d / np.sqrt(2), d/np.sqrt(2)],
+                             [-d / np.sqrt(2), d/np.sqrt(2)],
+                             [d / np.sqrt(2), -d/np.sqrt(2)],
+                             [-d / np.sqrt(2), -d/np.sqrt(2)],
+                             [0, 0]])
+    elif radar_name == 'Ydist':
+        freq = 31
+        lambda0 = lambda_caĺ(frequency=freq)
+        d = 3
+        xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
+                            [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
+                            [0, -d],
+                            [0, 0]])
+    return lambda0, xycoords, freq
 
 
 def R_cal(sensor_groups, xycoords):
@@ -189,7 +221,7 @@ def permutations_create(permutations_base, intersections_ind, k_length, permutat
     return list(itertools.product(*iterables))
 
 
-def k0(el0, az0):
+def k0_cal(el0, az0):
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
         np.radians(el0)), np.sin(np.radians(el0))]

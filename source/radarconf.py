@@ -9,12 +9,6 @@ from matplotlib.ticker import MaxNLocator
 from time import time, gmtime, strftime
 import h5py
 
-# put latex in figures
-from matplotlib import rc
-
-rc('text', usetex=True)
-rc('font', family='serif')
-
 t = time()
 
 # Parameters
@@ -22,35 +16,7 @@ mp_tol = 1e-1
 
 radar = 'JONES'
 
-if radar == 'JONES':
-    freq = 31
-    lambda0 = lambda0(frequency=freq)
-    xycoords = np.array([[0, 2],
-                         [0, -2.5],
-                         [-2, 0],
-                         [2.5, 0],
-                         [0, 0]])
-elif radar == 'symmetric1':
-    freq = 31
-    d = 3
-    lambda0 = lambda0(frequency=freq)
-    xycoords = np.array([[d, 0],
-                         [-d, 0],
-                         [0, d],
-                         [0, -d],
-                         [d / np.sqrt(2), d/np.sqrt(2)],
-                         [-d / np.sqrt(2), d/np.sqrt(2)],
-                         [d / np.sqrt(2), -d/np.sqrt(2)],
-                         [-d / np.sqrt(2), -d/np.sqrt(2)],
-                         [0, 0]])
-elif radar == 'Ydist':
-    freq = 31
-    lambda0 = lambda0(frequency=freq)
-    d = 3
-    xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
-                        [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
-                        [0, -d],
-                        [0, 0]])
+lambda0, xycoords, freq = radar_conf(radar_name=radar)
 
 if not os.path.exists('../results/'+radar):
     os.makedirs('../results/'+radar)
@@ -61,8 +27,6 @@ log.write('Solution for ' + radar + ' radar configuration is calculated. \r\n')
 log.write('.................................................... \r\n')
 log.write('frequency (f) = ' + str(freq) + 'MHz \r\n')
 log.write('array positions: ' + '\r\n')
-
-
 
 # CODE STARTS HERE
 
@@ -79,7 +43,7 @@ K = linCoeff_cal(R=R)
 # Calculate base numbers
 n0 = np.floor(2 * K)
 
-# K's from 1 to *no + 1
+# K's from 1 to no + 1
 k_length = 2 * n0 + 1
 
 # Create all possible permutations from 3 first sets of planes
@@ -214,12 +178,23 @@ log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Time elapsed for main ca
           + ' seconds \r\n')
 
 with h5py.File('../processed_data/' + radar + '.h5', 'w') as hdf:
-    hdf.create_dataset('intersections_integers_complete', data=intersections_integers_complete)
-    hdf.create_dataset('ambiguity_distances_INT_FORM_MAT', data=AmbiguityDistances['int_form_mat'])
-    hdf.create_dataset('ambiguity_distances_INT_FORM_mean', data=AmbiguityDistances['int_form_mean'])
-    hdf.create_dataset('ambiguity_distances_WAVE_FORM_MAT', data=AmbiguityDistances['wave_form_mat'])
-    hdf.create_dataset('ambiguity_distances_WAVE_FORM', data=AmbiguityDistances['wave_form'])
-    hdf.create_dataset('intersections_line', data=intersection_line[:, intersections['indexes'][0]])
+
+    G1 = hdf.create_group('trivial_calculations')
+    G1.create_dataset('sensor_groups', data=Sn)
+    G1.create_dataset('subgroup_phase_center', data=R)
+    G1.create_dataset('linear_coefficients', data=K)
+    G1.create_dataset('base_numbers', data=n0)
+    G1.create_dataset('k_length', data=k_length)
+
+    G2 = hdf.create_group('results_permutations')
+    G2.create_dataset('intersections_integers_complete', data=intersections_integers_complete)
+    G2.create_dataset('ambiguity_distances_INT_FORM_MAT', data=AmbiguityDistances['int_form_mat'])
+    G2.create_dataset('ambiguity_distances_INT_FORM_mean', data=AmbiguityDistances['int_form_mean'])
+    G2.create_dataset('ambiguity_distances_WAVE_FORM_MAT', data=AmbiguityDistances['wave_form_mat'])
+    G2.create_dataset('ambiguity_distances_WAVE_FORM', data=AmbiguityDistances['wave_form'])
+    G2.create_dataset('intersection_line', data=intersection_line)
+    G2.create_dataset('intersection_indexes', data=intersections['indexes'])
+    G2.create_dataset('survivors', data=SURVIVORS)
 
 log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Results exported to /processed_data/' + radar + '.h5 \r\n')
 
@@ -326,4 +301,4 @@ ax7.set_aspect('equal')
 fig7.savefig('../results/'+radar+'/figure7', format='eps')
 
 print(time()-t)
-plt.show()
+# plt.show()

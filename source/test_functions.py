@@ -34,7 +34,7 @@ class TestFunctions(unittest.TestCase):
         k_length = [2, 3]
         ii = 1
 
-        PERMS_J = permutations_create(permutations_base=PERMS_J_base, intersections_ind=indexes, k_length=k_length, 
+        PERMS_J = permutations_create(permutations_base=PERMS_J_base, intersections_ind=indexes, k_length=k_length,
                                       permutation_index=ii)
 
         self.assertEqual(len(PERMS_J), len(np.array(PERMS_J_base)[indexes[0], :]) * k_length[1])
@@ -58,9 +58,9 @@ class TestFunctions(unittest.TestCase):
         self.assertEqual(len(K), 3)
         np.testing.assert_array_almost_equal(K, np.array([np.sqrt(3*1), np.sqrt(3*4), np.sqrt(3*9)]))
         
-    def test_k0(self):
+    def test_k0_cal(self):
 
-        a = k0(el0=50, az0=270)
+        a = k0_cal(el0=50, az0=270)
 
         np.testing.assert_array_almost_equal(np.array(a), np.array([-0.642788, 0, 0.76604]), decimal=4)
 
