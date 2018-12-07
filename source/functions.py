@@ -14,21 +14,22 @@ def lambda0(frequency):
     :return: wavelength: wave length of electromagnetic radiation [m]
     """
 
-    wavelength = c * 1e-6 / frequency
-
-    return wavelength
+    return c * 1e-6 / frequency
 
 
-def rRrho_cal(sensor_groups, subgroup_size, xycoords):
+def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
     """
 
     :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located at the origin
     :param subgroup_size: size of subgroups in radar configuration
     :param xycoords: locations of the subgroups [m]
+    :param xpos: antennas x-coordinates
+    :param ypos: antennas y-coordinates
+    :param zpos: antennas z-coordinates
 
-    :return: r:
-    :return: R:
-    :return: rho:
+    :return: r: antenna position
+    :return: R: subgroup phase center
+    :return: rho: antenna position w.r.t. R
     """
 
     r = np.zeros((3, subgroup_size, sensor_groups))
@@ -48,7 +49,7 @@ def rRrho_cal(sensor_groups, subgroup_size, xycoords):
 
         rho[:, :, i] = r[:, :, i] - np.tile(np.reshape(R[:, i], (3, 1)), (1, subgroup_size))
 
-    return r, R, rho
+    return R, rho
 
 
 def linCoeff_cal(R):

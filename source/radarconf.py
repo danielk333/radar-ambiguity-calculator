@@ -1,7 +1,6 @@
 import os
 import matplotlib.pyplot as plt
 import numpy as np
-from scipy.spatial import ConvexHull
 from functions import *
 import itertools
 from scipy.constants import pi as pi
@@ -21,17 +20,37 @@ t = time()
 # Parameters
 mp_tol = 1e-1
 
-radar = 'JONES'
+radar = 'symmetric1'
 
 if radar == 'JONES':
     freq = 31
     lambda0 = lambda0(frequency=freq)
-    xycoords = np.array([[0, 2], [0, -2.5], [-2, 0], [2.5, 0], [0, 0]])
+    xycoords = np.array([[0, 2],
+                         [0, -2.5],
+                         [-2, 0],
+                         [2.5, 0],
+                         [0, 0]])
+    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+elif radar == 'symmetric1':
+    freq = 31
+    d = 3
+    lambda0 = lambda0(frequency=freq)
+    xycoords = np.array([[d, 0],
+                         [-d, 0],
+                         [0, d],
+                         [0, -d],
+                         [d / np.sqrt(2), d/np.sqrt(2)],
+                         [-d / np.sqrt(2), d/np.sqrt(2)],
+                         [d / np.sqrt(2), -d/np.sqrt(2)],
+                         [-d / np.sqrt(2), -d/np.sqrt(2)],
+                         [0, 0]])
     xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
     ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
     zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
 
-elif radar == 'symmetric3':
+elif radar == 'Ydist':
     freq = 31
     lambda0 = lambda0(frequency=freq)
     d = 3
@@ -39,10 +58,11 @@ elif radar == 'symmetric3':
                         [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
                         [0, -d],
                         [0, 0]])
-    xpos = (np.zeros((4, 4)) \
-            + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1)) \
+    xpos = (np.zeros((4, 4))
+            + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1))
             + np.transpose(np.tile(xycoords[:, 0], (4, 1)))) * lambda0
-    ypos = (np.zeros((4, 4)) + np.tile(np.array([-d / 6, d / 6, 0, 0]), (4, 1)) + np.transpose(np.tile(xycoords[:, 1], (4, 1)))) * lambda0
+    ypos = (np.zeros((4, 4)) + np.tile(np.array([-d / 6, d / 6, 0, 0]), (4, 1))
+            + np.transpose(np.tile(xycoords[:, 1], (4, 1)))) * lambda0
     zpos = np.zeros((4, 4))
 
 if not os.path.exists('../results/'+radar):
@@ -70,7 +90,7 @@ Zn = np.shape(zpos)[1]
 Sn = np.shape(zpos)[0] - 1
 
 ##
-r, R, rho = rRrho_cal(sensor_groups=Sn,
+R, rho = rRrho_cal(sensor_groups=Sn,
                       subgroup_size=Zn,
                       xycoords=xycoords,
                       xpos=xpos,
@@ -94,7 +114,8 @@ PERMS_J = list(itertools.product(*iterables3))  # list of tuples, each tuples co
 
 
 print('First intersection calculation: %1d permutations of 3 planes \n' % PERMS_number)
-log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Started ' + str(PERMS_number) + ' permutations of 3 planes. \r\n')
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Started ' + str(PERMS_number)
+          + ' permutations of 3 planes. \r\n')
 
 # 3 first sets of planes
 
@@ -130,8 +151,9 @@ intersections = intersections_cal(pinv_norm=pinv_norm,
 SURVIVORS = np.zeros((Sn - 2, 1))
 SURVIVORS[0] = intersections['number']
 
-log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished ' + str(PERMS_number) + ' permutations of 3 planes. \r\n')
-log.write('                      There were ' + str(intersections['number']) + 'survivors \r\n')
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished ' + str(PERMS_number)
+          + ' permutations of 3 planes. \r\n')
+log.write('                      There were ' + str(intersections['number']) + ' survivors \r\n')
 
 
 print('Done with first three permutations')
@@ -156,7 +178,9 @@ for ii in range(3, Sn):
         'Starting plane intersections for new sensor %1d of %1d with %1d permutations on %1d remaining solutions \n' % (
             ii+1, Sn, PERMS_number, intersections['number']))
 
-    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Starting plane intersections for new sensor ' + str(ii+1) + ' of ' + str(Sn) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number']) + ' remaining solutions \r\n')
+    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Starting plane intersections for new sensor ' + str(ii+1)
+              + ' of ' + str(Sn) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number'])
+              + ' remaining solutions \r\n')
 
     PERMS_J = permutations_create(permutations_base=PERMS_J_base,
                                   intersections_ind=intersections['indexes'],
@@ -191,15 +215,18 @@ for ii in range(3, Sn):
 
     SURVIVORS[ii-2] = intersections['number']
 
-    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished plane intersections for new sensor ' + str(ii) + ' of ' + str(Sn-1) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number']) + ' remaining solutions \r\n')
+    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished plane intersections for new sensor ' + str(ii+1)
+              + ' of ' + str(Sn) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number'])
+              + ' remaining solutions \r\n')
     if not ii+1 == Sn:
         log.write('                      There were ' + str(intersections['number']) + 'survivors \r\n')
     else:
-        log.write('                      At the end there are ' + str(intersections['number']) + ' brave survivors \r\n')
+        log.write('                      At the end there are ' + str(intersections['number'])
+                  + ' brave survivors \r\n')
 
 
 intersections_last = intersections['number']
-log.close()
+
 print('Last number of valid intersections ' + str(intersections_last))
 
 intersections_integers_complete = np.vstack((np.zeros(
@@ -212,6 +239,10 @@ AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integer
                                       np.exp(1j * 2 * pi * np.round(intersections_integers_complete))
 AmbiguityDistances['wave_form'] = np.sqrt(
     np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
+
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Time elapsed for main calculations was ' + str(t-time())
+          + ' seconds \r\n')
+log.close()
 
 # TODO create a separate function from here till the end.
 k0 = k0(el0=50, az0=270)
@@ -226,18 +257,17 @@ cap_intersections_of_slines = slines_intersections(k0=k0,
                                                    cutoff_ph_ang=cutoff_ph_ang)
 
 # From knowing what lines intercept with cap, find al possible DOA ambiguities that are part of this
-ambiguity_distances_explicit, ambiguity_distances_normal, k_finds = explicit(intersection_line=intersection_line,
-                                                                             intersections_ind=intersections['indexes'][0],
-                                                                             cap_intersections_of_slines=cap_intersections_of_slines,
-                                                                             xy=xycoords,
-                                                                             k0=k0)
+ambiguity_distances_explicit, ambiguity_distances_normal, k_finds \
+    = explicit(intersection_line=intersection_line,
+               intersections_ind=intersections['indexes'][0],
+               cap_intersections_of_slines=cap_intersections_of_slines,
+               xy=xycoords,
+               k0=k0)
 
 print('Done with all other permutations')
 
-
-
 # PLOTS
-# TODO Ask Daniel about the Convhull part
+
 fig1, ax1 = plt.subplots()
 ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o', label='Sensor position')
 ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
@@ -290,8 +320,6 @@ ax4.set_zlabel(r'$s_{z} \ [1]$', fontsize=14)
 ax4.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
 fig4.savefig('../results/'+radar+'/figure4', format='eps')
 
-
-
 circ_cutoff_ph_ang_x = np.sin(cutoff_ph_ang) * np.cos(np.linspace(start=0, stop=2*pi, num=100))
 circ_cutoff_ph_ang_y = np.sin(cutoff_ph_ang) * np.sin(np.linspace(start=0, stop=2*pi, num=100))
 
@@ -299,7 +327,7 @@ fig6, ax6 = plt.subplots()
 for S_ind in range(0, len(intersections['indexes'][0])):
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
     ax6.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
-    plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
+    plt.text(s_point[0]+0.03, s_point[1]+0.03, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
 ax6.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
 ax6.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
 ax6.grid(which='both')
@@ -321,6 +349,5 @@ ax7.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
 ax7.set_aspect('equal')
 fig7.savefig('../results/'+radar+'/figure7', format='eps')
 
-# waveform = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).wave_form()
 print(time()-t)
-# plt.show()
+plt.show()
