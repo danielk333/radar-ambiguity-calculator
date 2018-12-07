@@ -174,4 +174,4 @@ def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, 
         k_finds)[1], axis=0)) - subgroup_signal) / np.repeat([ambiguity_distances_explicit], repeats=np.shape(
         subgroup_signal)[0], axis=0)
 
-    return ambiguity_distances_explicit, ambiguity_normal_explicit
+    return ambiguity_distances_explicit, ambiguity_normal_explicit, k_finds

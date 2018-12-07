@@ -200,7 +200,7 @@ cap_intersections_of_slines = slines_intersections(k0=k0,
 
 # From knowing what lines intercept with cap, find al possible DOA ambigs that are part of this
 
-ambiguity_distances_explicit, ambiguity_distances_normal = explicit(intersection_line=intersection_line,
+ambiguity_distances_explicit, ambiguity_distances_normal, k_finds = explicit(intersection_line=intersection_line,
                                                                     intersections_ind=intersections['indexes'][0],
                                                                     cap_intersections_of_slines=cap_intersections_of_slines,
                                                                     xy=xycoords,
@@ -274,9 +274,10 @@ fig6 = plt.figure()
 ax61 = plt.subplot(1, 2, 1)
 for S_ind in range(0, len(intersections['indexes'][0])):
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
-    ax61.scatter(s_point[0], s_point[1], s = 40, c=(0, 0, 1))
+    ax61.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
     plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
 ax61.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
+ax61.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
 ax61.grid(which='both')
 ax61.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
 ax61.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
@@ -284,7 +285,16 @@ ax61.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
 ax61.set_aspect('equal')
 
 ax62 = plt.subplot(1, 2, 2)
+ax62.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
+for i in range(0, np.shape(k_finds)[1]):
+    ax62.scatter(k_finds[0, i], k_finds[1, i], s=20, c=(0, 0, 1), alpha=0.6)
+    plt.text(k_finds[0, i] + 0.1, k_finds[1, i] + 0.1, "%0.2f" % ambiguity_distances_explicit[i])
+ax62.grid(which='both')
+ax62.set_xlabel(r'$k_{x}$ \ [1]', fontsize=12)
+ax62.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=12)
+ax62.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
 ax62.set_aspect('equal')
+
 
 
 # waveform = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).wave_form()
