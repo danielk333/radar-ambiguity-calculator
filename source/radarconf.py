@@ -7,7 +7,7 @@ import itertools
 from scipy.constants import pi as pi
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
-from time import time
+from time import time, gmtime, strftime
 import h5py
 
 # put latex in figures
@@ -21,42 +21,39 @@ t = time()
 # Parameters
 mp_tol = 1e-1
 
-gain_yagi = 7.24
-gain_yagi_base = 10**(gain_yagi/10)
-
-radar = 'JICAMARCA'
+radar = 'JONES'
 
 if radar == 'JONES':
-    lambda0 = lambda0(frequency=31)
+    freq = 31
+    lambda0 = lambda0(frequency=freq)
     xycoords = np.array([[0, 2], [0, -2.5], [-2, 0], [2.5, 0], [0, 0]])
     xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
     ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
     zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
 
-elif radar == 'JICAMARCA':
-    lambda0 = lambda0(frequency=31)
-    d = 144
-    xycoords = np.array([[-d/lambda0/2, -d/lambda0/2],
-                        [d/lambda0/2, -d/lambda0/2],
-                        [d/lambda0/2, d/lambda0/2],
-                        [-(36+36/2)/lambda0, (36*3+36/2)/lambda0],
-                        [-(36+36/2)/lambda0, (36*2+36/2)/lambda0],
-                        [-(36*2+36/2)/lambda0, (36*2+36/2)/lambda0]])
-    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-
 elif radar == 'symmetric3':
-    lambda0 = lambda0(frequency=31)
+    freq = 31
+    lambda0 = lambda0(frequency=freq)
     d = 3
     xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
                         [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
                         [0, -d],
                         [0, 0]])
-    xpos = (np.zeros((4, 4)) + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1)) + np.transpose(np.tile(xycoords[:, 0], (4, 1)))) * lambda0
+    xpos = (np.zeros((4, 4)) \
+            + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1)) \
+            + np.transpose(np.tile(xycoords[:, 0], (4, 1)))) * lambda0
     ypos = (np.zeros((4, 4)) + np.tile(np.array([-d / 6, d / 6, 0, 0]), (4, 1)) + np.transpose(np.tile(xycoords[:, 1], (4, 1)))) * lambda0
     zpos = np.zeros((4, 4))
 
+if not os.path.exists('../results/'+radar):
+    os.makedirs('../results/'+radar)
+
+# generate and write .log file
+log = open('../results/' + radar + '/' + radar + '.log', mode='w', newline='\r\n')
+log.write('Solution for ' + radar + ' radar configuration is calculated. \r\n')
+log.write('.................................................... \r\n')
+log.write('frequency (f) = ' + str(freq) + 'MHz \r\n')
+log.write('array positions: ' + '\r\n')
 
 
 
@@ -95,7 +92,9 @@ PERMS_number = np.prod(k_length[0:3])
 iterables3 = [range(1, int(k_length[0])+1), range(1, int(k_length[1])+1), range(1, int(k_length[2])+1)]
 PERMS_J = list(itertools.product(*iterables3))  # list of tuples, each tuples containing 3 int.
 
+
 print('First intersection calculation: %1d permutations of 3 planes \n' % PERMS_number)
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Started ' + str(PERMS_number) + ' permutations of 3 planes. \r\n')
 
 # 3 first sets of planes
 
@@ -118,11 +117,6 @@ for aux, j in enumerate(PERMS_J):
     intersection_line[:, aux], pinv_norm[aux] = mooore_penrose_solution(W=W_matrix,
                                                                         b=b_vector)
 
-show3 = False
-
-if show3 is True:
-    plt.plot(pinv_norm)
-    plt.show()
 
 # Choose out from all possible combinations the one that are valid
 intersection_line_norm = np.transpose(np.sqrt([np.sum(intersection_line ** 2, axis=0)]))
@@ -135,6 +129,10 @@ intersections = intersections_cal(pinv_norm=pinv_norm,
 
 SURVIVORS = np.zeros((Sn - 2, 1))
 SURVIVORS[0] = intersections['number']
+
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished ' + str(PERMS_number) + ' permutations of 3 planes. \r\n')
+log.write('                      There were ' + str(intersections['number']) + 'survivors \r\n')
+
 
 print('Done with first three permutations')
 
@@ -156,7 +154,9 @@ for ii in range(3, Sn):
 
     print(
         'Starting plane intersections for new sensor %1d of %1d with %1d permutations on %1d remaining solutions \n' % (
-            ii, Sn-1, PERMS_number, intersections['number']))
+            ii+1, Sn, PERMS_number, intersections['number']))
+
+    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Starting plane intersections for new sensor ' + str(ii+1) + ' of ' + str(Sn) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number']) + ' remaining solutions \r\n')
 
     PERMS_J = permutations_create(permutations_base=PERMS_J_base,
                                   intersections_ind=intersections['indexes'],
@@ -191,8 +191,15 @@ for ii in range(3, Sn):
 
     SURVIVORS[ii-2] = intersections['number']
 
-intersections_last = intersections['number']
+    log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Finished plane intersections for new sensor ' + str(ii) + ' of ' + str(Sn-1) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number']) + ' remaining solutions \r\n')
+    if not ii+1 == Sn:
+        log.write('                      There were ' + str(intersections['number']) + 'survivors \r\n')
+    else:
+        log.write('                      At the end there are ' + str(intersections['number']) + ' brave survivors \r\n')
 
+
+intersections_last = intersections['number']
+log.close()
 print('Last number of valid intersections ' + str(intersections_last))
 
 intersections_integers_complete = np.vstack((np.zeros(
@@ -206,6 +213,7 @@ AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integer
 AmbiguityDistances['wave_form'] = np.sqrt(
     np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
 
+# TODO create a separate function from here till the end.
 k0 = k0(el0=50, az0=270)
 
 cutoff_ph_ang = pi/2
@@ -226,8 +234,7 @@ ambiguity_distances_explicit, ambiguity_distances_normal, k_finds = explicit(int
 
 print('Done with all other permutations')
 
-if not os.path.exists('../results/'+radar):
-    os.makedirs('../results/'+radar)
+
 
 # PLOTS
 # TODO Ask Daniel about the Convhull part
@@ -237,7 +244,7 @@ ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Su
 ax1.grid(which='both')
 ax1.set_xlabel('x [m]', fontsize=14)
 ax1.set_ylabel('y [m]', fontsize=14)
-ax1.set_title(r'\textbf{MU-radar sensor configuration}', fontsize=14)
+ax1.set_title(r'\textbf{' + radar + ' radar sensor configuration}', fontsize=14)
 chartBox = ax1.get_position()
 ax1.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.6, chartBox.height])
 ax1.legend(loc='upper center', bbox_to_anchor=(1.45, 0.8), shadow=True, ncol=1, fontsize=14)

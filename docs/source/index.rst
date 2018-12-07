@@ -11,6 +11,9 @@ Contents:
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
+	
+   radar
+
 
 
 Indices and tables

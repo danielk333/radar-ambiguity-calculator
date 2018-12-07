@@ -19,15 +19,12 @@ def lambda0(frequency):
     return wavelength
 
 
-def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
+def rRrho_cal(sensor_groups, subgroup_size, xycoords):
     """
 
     :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located at the origin
     :param subgroup_size: size of subgroups in radar configuration
     :param xycoords: locations of the subgroups [m]
-    :param xpos:
-    :param ypos:
-    :param zpos:
 
     :return: r:
     :return: R:
@@ -102,12 +99,12 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
     Calculate the Moore-Penrose solution for each case making use of parallel threading to parallelize task
     and joining results. Calls the function moore_penrose_solution_ptr
 
-    :param W:
+    :param W: Matrix representation of all the normal vector of the planes going through the interserction.
     :param b_set: Set ob b vectors for which the solution is going to be computed.
-    :param pnum: ?
+    :param pnum: Number of cores for parallelizing
     :param niter: number of permutations.
     :param intersection_line_set: initial array with zeros where the intersection lines will be allocated.
-    :param pinv_norm_set: error in the ??
+    :param pinv_norm_set: error in the MP solution approximation
 
     :return:
     """
@@ -118,7 +115,7 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
 
     job_id = 0
     if niter % pnum == 0:
-        subset = niter/pnum
+        subset = int(niter/pnum)
     else:
         subset = niter//pnum + 1
 
