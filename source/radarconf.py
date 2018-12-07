@@ -66,10 +66,6 @@ log.write('array positions: ' + '\r\n')
 
 # CODE STARTS HERE
 
-
-# Subgroup size
-
-
 # Do not count the last group as it is defined as the origin
 # Sn : sensor_groups
 Sn = np.shape(xycoords)[0] - 1
