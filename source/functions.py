@@ -161,8 +161,8 @@ def intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs
     Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose error
     is below a given tolerance value.
 
-    :param pinv_norm:
-    :param mp_tol:
+    :param pinv_norm: distance from
+    :param mp_tol: Error tolerance
     :param PERMS_J:
     :param intersection_line:
     :param R:

@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from scipy.spatial import ConvexHull
@@ -23,7 +24,7 @@ mp_tol = 1e-1
 gain_yagi = 7.24
 gain_yagi_base = 10**(gain_yagi/10)
 
-radar = 'symmetric3'
+radar = 'JICAMARCA'
 
 if radar == 'JONES':
     lambda0 = lambda0(frequency=31)
@@ -225,34 +226,42 @@ ambiguity_distances_explicit, ambiguity_distances_normal, k_finds = explicit(int
 
 print('Done with all other permutations')
 
+if not os.path.exists('../results/'+radar):
+    os.makedirs('../results/'+radar)
+
 # PLOTS
 # TODO Ask Daniel about the Convhull part
 fig1, ax1 = plt.subplots()
 ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o', label='Sensor position')
 ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
 ax1.grid(which='both')
-ax1.legend(fontsize=12)
-ax1.set_xlabel('x [m]', fontsize=12)
-ax1.set_ylabel('y [m]', fontsize=12)
+ax1.set_xlabel('x [m]', fontsize=14)
+ax1.set_ylabel('y [m]', fontsize=14)
 ax1.set_title(r'\textbf{MU-radar sensor configuration}', fontsize=14)
+chartBox = ax1.get_position()
+ax1.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.6, chartBox.height])
+ax1.legend(loc='upper center', bbox_to_anchor=(1.45, 0.8), shadow=True, ncol=1, fontsize=14)
 ax1.set_aspect('equal')
+fig1.savefig('../results/'+radar+'/figure1', format='eps')
 
 fig2, ax2 = plt.subplots()
 ax2.plot(range(3, Sn+1), SURVIVORS, 'bs')
 ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
 ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
 ax2.grid(which='both')
-ax2.set_xlabel('Number of sensors included', fontsize=12)
-ax2.set_ylabel('Number of common plane intersections', fontsize=12)
+ax2.set_xlabel('Number of sensors included', fontsize=14)
+ax2.set_ylabel('Number of common plane intersections', fontsize=14)
 ax2.set_title(r'\textbf{Intersection plane counts}', fontsize=14)
+fig2.savefig('../results/'+radar+'/figure2', format='eps')
 
 fig3, ax3 = plt.subplots()
 ax3.scatter(intersection_line[0, intersections['indexes'][0]], intersection_line[1, intersections['indexes'][0]], s=40)
 ax3.grid(which='both')
-ax3.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
-ax3.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
+ax3.set_xlabel(r'$s_{x}$ \ [1]', fontsize=14)
+ax3.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)
 ax3.set_title(r'\textbf{Intersection lines}', fontsize=14)
 ax3.set_aspect('equal')
+fig3.savefig('../results/'+radar+'/figure3', format='eps')
 
 fig4 = plt.figure()
 ax4 = fig4.gca(projection='3d')
@@ -268,50 +277,43 @@ for S_ind in range(0, len(intersections['indexes'][0])):
         ax4.plot(s_line[0, :], s_line[1, :], s_line[2, :], '.r')
     else:
         ax4.plot(s_line[0, :], s_line[1, :], s_line[2, :], '.b')
-ax4.set_xlabel(r'$s_{x} \ [1]$', fontsize=12)
-ax4.set_ylabel(r'$s_{y} \ [1]$', fontsize=12)
-ax4.set_zlabel(r'$s_{z} \ [1]$', fontsize=12)
+ax4.set_xlabel(r'$s_{x} \ [1]$', fontsize=14)
+ax4.set_ylabel(r'$s_{y} \ [1]$', fontsize=14)
+ax4.set_zlabel(r'$s_{z} \ [1]$', fontsize=14)
 ax4.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+fig4.savefig('../results/'+radar+'/figure4', format='eps')
 
-fig5, ax5 = plt.subplots()
-for S_ind in range(0, len(intersections['indexes'][0])):
-    s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
-    ax5.scatter(s_point[0], s_point[1], s=10, c=(0, 0, 1))
-    plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
-ax5.grid(which='both')
-ax5.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
-ax5.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
-ax5.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
-ax5.set_aspect('equal')
+
 
 circ_cutoff_ph_ang_x = np.sin(cutoff_ph_ang) * np.cos(np.linspace(start=0, stop=2*pi, num=100))
 circ_cutoff_ph_ang_y = np.sin(cutoff_ph_ang) * np.sin(np.linspace(start=0, stop=2*pi, num=100))
 
-fig6 = plt.figure()
-ax61 = plt.subplot(1, 2, 1)
+fig6, ax6 = plt.subplots()
 for S_ind in range(0, len(intersections['indexes'][0])):
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
-    ax61.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
+    ax6.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
     plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
-ax61.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
-ax61.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
-ax61.grid(which='both')
-ax61.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
-ax61.set_ylabel(r'$s_{y}$ \ [1]', fontsize=12)
-ax61.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
-ax61.set_aspect('equal')
+ax6.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
+ax6.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
+ax6.grid(which='both')
+ax6.set_xlabel(r'$s_{x}$ \ [1]', fontsize=14)
+ax6.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)
+ax6.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+ax6.set_aspect('equal')
+fig6.savefig('../results/'+radar+'/figure6', format='eps')
 
-ax62 = plt.subplot(1, 2, 2)
-ax62.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
+fig7, ax7 = plt.subplots()
+ax7.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
 for i in range(0, np.shape(k_finds)[1]):
-    ax62.scatter(k_finds[0, i], k_finds[1, i], s=20, c=(0, 0, 1), alpha=0.6)
+    ax7.scatter(k_finds[0, i], k_finds[1, i], s=20, c=(0, 0, 1), alpha=0.6)
     plt.text(k_finds[0, i] + 0.1, k_finds[1, i] + 0.1, "%0.2f" % ambiguity_distances_explicit[i])
-ax62.grid(which='both')
-ax62.set_xlabel(r'$k_{x}$ \ [1]', fontsize=12)
-ax62.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=12)
-ax62.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
-ax62.set_aspect('equal')
+ax7.grid(which='both')
+ax7.set_xlabel(r'$k_{x}$ \ [1]', fontsize=14)
+ax7.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=14)
+ax7.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
+ax7.set_aspect('equal')
+fig7.savefig('../results/'+radar+'/figure7', format='eps')
 
 # waveform = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).wave_form()
 print(time()-t)
-plt.show()
+# plt.show()
