@@ -7,10 +7,32 @@ import threading
 
 def lambda0(frequency):
 
-    return c * 1e-6 / frequency
+    """
+    Calculates the wave length of electromagnetic radiation given its frequency.
+
+    :param frequency: Frequency of electromagnetic radiation [MHz]
+    :return: wavelength: wave length of electromagnetic radiation [m]
+    """
+
+    wavelength = c * 1e-6 / frequency
+
+    return wavelength
 
 
 def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
+    """
+
+    :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located at the origin
+    :param subgroup_size: size of subgroups in radar configuration
+    :param xycoords: locations of the subgroups [m]
+    :param xpos:
+    :param ypos:
+    :param zpos:
+
+    :return: r:
+    :return: R:
+    :return: rho:
+    """
 
     r = np.zeros((3, subgroup_size, sensor_groups))
 
@@ -34,6 +56,14 @@ def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
 
 def linCoeff_cal(R):
 
+    """
+    Calculate linear coefficients given R.
+
+    :param R:
+
+    :return:
+    """
+
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
 
 
@@ -50,6 +80,7 @@ def nvec_j(j, R):
 # TODO test function for this section
 # pointer version
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
+
     for ind in ind_range:
         b = b_set[:, ind].view()
 
@@ -58,13 +89,28 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
 
 
-#this wraps mooore_penrose_solution to do parallel calculations
+# this wraps mooore_penrose_solution to do parallel calculations
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
     # b_set is a matrix with columns as the vectors
     #
     # maybe we should use generators all the way here but its
     # too intrecate too include now
     # maybe at a later stage if memory footprint is a problem
+
+    """
+
+    Calculate the Moore-Penrose solution for each case making use of parallel threading to parallelize task
+    and joining results. Calls the function moore_penrose_solution_ptr
+
+    :param W:
+    :param b_set: Set ob b vectors for which the solution is going to be computed.
+    :param pnum: ?
+    :param niter: number of permutations.
+    :param intersection_line_set: initial array with zeros where the intersection lines will be allocated.
+    :param pinv_norm_set: error in the ??
+
+    :return:
+    """
 
     Wpinv = np.linalg.pinv(W)
 
@@ -83,13 +129,14 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
             else:
                 job_range = range(job_id*subset, (job_id+1)*subset)
             
-            t = threading.Thread(target=mooore_penrose_solution_ptr, 
-                        args=[W, 
-                           Wpinv, 
-                           b_set, 
-                           intersection_line_set, 
-                           pinv_norm_set, 
-                           job_range])
+            t = threading.Thread(target=mooore_penrose_solution_ptr,
+                                 args=[W,
+                                       Wpinv,
+                                       b_set,
+                                       intersection_line_set,
+                                       pinv_norm_set,
+                                       job_range])
+
             threads.append(t)
             t.start()
             job_id+=1
@@ -99,7 +146,7 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
 
 
 # TODO test function moore_penrose_solution
-def mooore_penrose_solution (W, b):
+def mooore_penrose_solution(W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
     intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
@@ -108,7 +155,20 @@ def mooore_penrose_solution (W, b):
     return intersection_line, pinv_norm
 
 
-def intersections_cal (pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs):
+def intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs):
+
+    """
+    Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose error
+    is below a given tolerance value.
+
+    :param pinv_norm:
+    :param mp_tol:
+    :param PERMS_J:
+    :param intersection_line:
+    :param R:
+    :param kwargs:
+    :return:
+    """
 
     intersections = dict()
 
@@ -131,6 +191,18 @@ def intersections_cal (pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwarg
 
 
 def permutations_create(permutations_base, intersections_ind, k_length, permutation_index):
+
+    """
+    Create all possible permutations by combining current permutation combinations with valid indexes and ...???
+
+
+    :param permutations_base:
+    :param intersections_ind:
+    :param k_length:
+    :param permutation_index:
+    :return:
+    """
+
     iterables = [np.array(permutations_base)[intersections_ind[0], :], range(1, int(k_length[permutation_index]) + 1)]
 
     return list(itertools.product(*iterables))

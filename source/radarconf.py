@@ -23,25 +23,40 @@ mp_tol = 1e-1
 gain_yagi = 7.24
 gain_yagi_base = 10**(gain_yagi/10)
 
-radar = 'JONES'
+radar = 'symmetric3'
 
 if radar == 'JONES':
     lambda0 = lambda0(frequency=31)
     xycoords = np.array([[0, 2], [0, -2.5], [-2, 0], [2.5, 0], [0, 0]])
+    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+
 elif radar == 'JICAMARCA':
     lambda0 = lambda0(frequency=31)
     d = 144
     xycoords = np.array([[-d/lambda0/2, -d/lambda0/2],
-                [d/lambda0/2, -d/lambda0/2],
-                [d/lambda0/2, d/lambda0/2],
-                [-(36+36/2)/lambda0, (36*3+36/2)/lambda0],
-                [-(36+36/2)/lambda0, (36*2+36/2)/lambda0],
-                [-(36*2+36/2)/lambda0, (36*2+36/2)/lambda0]
-                ])
+                        [d/lambda0/2, -d/lambda0/2],
+                        [d/lambda0/2, d/lambda0/2],
+                        [-(36+36/2)/lambda0, (36*3+36/2)/lambda0],
+                        [-(36+36/2)/lambda0, (36*2+36/2)/lambda0],
+                        [-(36*2+36/2)/lambda0, (36*2+36/2)/lambda0]])
+    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
 
-xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
+elif radar == 'symmetric3':
+    lambda0 = lambda0(frequency=31)
+    d = 3
+    xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
+                        [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
+                        [0, -d],
+                        [0, 0]])
+    xpos = (np.zeros((4, 4)) + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1)) + np.transpose(np.tile(xycoords[:, 0], (4, 1)))) * lambda0
+    ypos = (np.zeros((4, 4)) + np.tile(np.array([-d / 6, d / 6, 0, 0]), (4, 1)) + np.transpose(np.tile(xycoords[:, 1], (4, 1)))) * lambda0
+    zpos = np.zeros((4, 4))
+
+
 
 
 # CODE STARTS HERE
@@ -176,6 +191,9 @@ for ii in range(3, Sn):
     SURVIVORS[ii-2] = intersections['number']
 
 intersections_last = intersections['number']
+
+print('Last number of valid intersections ' + str(intersections_last))
+
 intersections_integers_complete = np.vstack((np.zeros(
     (1, np.shape(intersections['integers'])[1])), intersections['integers']))
 
@@ -198,20 +216,19 @@ cap_intersections_of_slines = slines_intersections(k0=k0,
                                                    intersection_line=intersection_line,
                                                    cutoff_ph_ang=cutoff_ph_ang)
 
-# From knowing what lines intercept with cap, find al possible DOA ambigs that are part of this
-
+# From knowing what lines intercept with cap, find al possible DOA ambiguities that are part of this
 ambiguity_distances_explicit, ambiguity_distances_normal, k_finds = explicit(intersection_line=intersection_line,
-                                                                    intersections_ind=intersections['indexes'][0],
-                                                                    cap_intersections_of_slines=cap_intersections_of_slines,
-                                                                    xy=xycoords,
-                                                                    k0=k0)
+                                                                             intersections_ind=intersections['indexes'][0],
+                                                                             cap_intersections_of_slines=cap_intersections_of_slines,
+                                                                             xy=xycoords,
+                                                                             k0=k0)
 
 print('Done with all other permutations')
 
-## PLOTS
+# PLOTS
 # TODO Ask Daniel about the Convhull part
 fig1, ax1 = plt.subplots()
-ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s = 85, alpha=0.85, marker='o', label='Sensor position')
+ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o', label='Sensor position')
 ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
 ax1.grid(which='both')
 ax1.legend(fontsize=12)
@@ -259,7 +276,7 @@ ax4.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
 fig5, ax5 = plt.subplots()
 for S_ind in range(0, len(intersections['indexes'][0])):
     s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
-    ax5.scatter(s_point[0], s_point[1], s = 40, c=(0, 0, 1))
+    ax5.scatter(s_point[0], s_point[1], s=10, c=(0, 0, 1))
     plt.text(s_point[0]+0.1, s_point[1]+0.1, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
 ax5.grid(which='both')
 ax5.set_xlabel(r'$s_{x}$ \ [1]', fontsize=12)
@@ -294,8 +311,6 @@ ax62.set_xlabel(r'$k_{x}$ \ [1]', fontsize=12)
 ax62.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=12)
 ax62.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
 ax62.set_aspect('equal')
-
-
 
 # waveform = AmbiguityDistances(intersections_integers_complete=intersections_integers_complete).wave_form()
 print(time()-t)
