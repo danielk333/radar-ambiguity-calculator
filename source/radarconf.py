@@ -20,7 +20,7 @@ t = time()
 # Parameters
 mp_tol = 1e-1
 
-radar = 'symmetric1'
+radar = 'JONES'
 
 if radar == 'JONES':
     freq = 31
@@ -30,9 +30,6 @@ if radar == 'JONES':
                          [-2, 0],
                          [2.5, 0],
                          [0, 0]])
-    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
 elif radar == 'symmetric1':
     freq = 31
     d = 3
@@ -46,10 +43,6 @@ elif radar == 'symmetric1':
                          [d / np.sqrt(2), -d/np.sqrt(2)],
                          [-d / np.sqrt(2), -d/np.sqrt(2)],
                          [0, 0]])
-    xpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    ypos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-    zpos = np.zeros((np.shape(xycoords)[0], 1)) * lambda0
-
 elif radar == 'Ydist':
     freq = 31
     lambda0 = lambda0(frequency=freq)
@@ -58,12 +51,6 @@ elif radar == 'Ydist':
                         [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
                         [0, -d],
                         [0, 0]])
-    xpos = (np.zeros((4, 4))
-            + np.tile(np.array([0, 0, -d / 6, d / 6]), (4, 1))
-            + np.transpose(np.tile(xycoords[:, 0], (4, 1)))) * lambda0
-    ypos = (np.zeros((4, 4)) + np.tile(np.array([-d / 6, d / 6, 0, 0]), (4, 1))
-            + np.transpose(np.tile(xycoords[:, 1], (4, 1)))) * lambda0
-    zpos = np.zeros((4, 4))
 
 if not os.path.exists('../results/'+radar):
     os.makedirs('../results/'+radar)
@@ -79,23 +66,16 @@ log.write('array positions: ' + '\r\n')
 
 # CODE STARTS HERE
 
-xant = xpos / lambda0
-yant = ypos / lambda0
 
 # Subgroup size
-Zn = np.shape(zpos)[1]
+
 
 # Do not count the last group as it is defined as the origin
 # Sn : sensor_groups
-Sn = np.shape(zpos)[0] - 1
+Sn = np.shape(xycoords)[0] - 1
 
 ##
-R, rho = rRrho_cal(sensor_groups=Sn,
-                      subgroup_size=Zn,
-                      xycoords=xycoords,
-                      xpos=xpos,
-                      ypos=ypos,
-                      zpos=zpos)
+R = R_cal(sensor_groups=Sn, xycoords=xycoords)
 
 # Calculate linear coefficients
 K = linCoeff_cal(R=R)
@@ -158,12 +138,6 @@ log.write('                      There were ' + str(intersections['number']) + '
 
 print('Done with first three permutations')
 
-# with h5py.File('../processed_data/JONES3.h5', 'w') as hdf:
-#     hdf.create_dataset('intersections', data=str(intersections))
-#     hdf.create_dataset('SURVIVORS', data=SURVIVORS)
-#     hdf.create_dataset('PERMS_J', data=PERMS_J)
-
-
 for ii in range(3, Sn):
 
     PERMS_J_base = PERMS_J
@@ -219,7 +193,7 @@ for ii in range(3, Sn):
               + ' of ' + str(Sn) + ' with ' + str(PERMS_number) + ' permutations on ' + str(intersections['number'])
               + ' remaining solutions \r\n')
     if not ii+1 == Sn:
-        log.write('                      There were ' + str(intersections['number']) + 'survivors \r\n')
+        log.write('                      There were ' + str(intersections['number']) + ' survivors \r\n')
     else:
         log.write('                      At the end there are ' + str(intersections['number'])
                   + ' brave survivors \r\n')
@@ -240,8 +214,19 @@ AmbiguityDistances['wave_form_mat'] = np.exp(1j * 2 * pi * intersections_integer
 AmbiguityDistances['wave_form'] = np.sqrt(
     np.sum(AmbiguityDistances['wave_form_mat'] * np.conjugate(AmbiguityDistances['wave_form_mat']), axis=0)).real
 
-log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Time elapsed for main calculations was ' + str(t-time())
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Time elapsed for main calculations was ' + str(time()-t)
           + ' seconds \r\n')
+
+with h5py.File('../processed_data/' + radar + '.h5', 'w') as hdf:
+    hdf.create_dataset('intersections_integers_complete', data=intersections_integers_complete)
+    hdf.create_dataset('ambiguity_distances_INT_FORM_MAT', data=AmbiguityDistances['int_form_mat'])
+    hdf.create_dataset('ambiguity_distances_INT_FORM_mean', data=AmbiguityDistances['int_form_mean'])
+    hdf.create_dataset('ambiguity_distances_WAVE_FORM_MAT', data=AmbiguityDistances['wave_form_mat'])
+    hdf.create_dataset('ambiguity_distances_WAVE_FORM', data=AmbiguityDistances['wave_form'])
+    hdf.create_dataset('intersections_line', data=intersection_line[:, intersections['indexes'][0]])
+
+log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Results exported to /processed_data/' + radar + '.h5 \r\n')
+
 log.close()
 
 # TODO create a separate function from here till the end.
@@ -270,15 +255,10 @@ print('Done with all other permutations')
 
 fig1, ax1 = plt.subplots()
 ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o', label='Sensor position')
-ax1.scatter(xant * lambda0, yant * lambda0, s=40, alpha=1, marker='^', label='Subgroups antennas')
 ax1.grid(which='both')
 ax1.set_xlabel('x [m]', fontsize=14)
 ax1.set_ylabel('y [m]', fontsize=14)
 ax1.set_title(r'\textbf{' + radar + ' radar sensor configuration}', fontsize=14)
-chartBox = ax1.get_position()
-ax1.set_position([chartBox.x0, chartBox.y0, chartBox.width*0.6, chartBox.height])
-ax1.legend(loc='upper center', bbox_to_anchor=(1.45, 0.8), shadow=True, ncol=1, fontsize=14)
-ax1.set_aspect('equal')
 fig1.savefig('../results/'+radar+'/figure1', format='eps')
 
 fig2, ax2 = plt.subplots()

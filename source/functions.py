@@ -17,39 +17,22 @@ def lambda0(frequency):
     return c * 1e-6 / frequency
 
 
-def rRrho_cal(sensor_groups, subgroup_size, xycoords, xpos, ypos, zpos):
+def R_cal(sensor_groups, xycoords):
     """
 
     :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located at the origin
-    :param subgroup_size: size of subgroups in radar configuration
     :param xycoords: locations of the subgroups [m]
-    :param xpos: antennas x-coordinates
-    :param ypos: antennas y-coordinates
-    :param zpos: antennas z-coordinates
 
-    :return: r: antenna position
+
     :return: R: subgroup phase center
-    :return: rho: antenna position w.r.t. R
     """
-
-    r = np.zeros((3, subgroup_size, sensor_groups))
-
-    r[0, :] = xpos[0, :sensor_groups]
-    r[1, :] = ypos[1, :sensor_groups]
-    r[2, :] = zpos[2, :sensor_groups]
 
     R = np.zeros((3, sensor_groups))
     R[0, :] = xycoords[:sensor_groups, 0]
     R[1, :] = xycoords[:sensor_groups, 1]
     R[2, :] = np.multiply(0, xycoords[:sensor_groups, 0])
 
-    rho = np.zeros((3, subgroup_size, sensor_groups))
-
-    for i in range(0, sensor_groups):
-
-        rho[:, :, i] = r[:, :, i] - np.tile(np.reshape(R[:, i], (3, 1)), (1, subgroup_size))
-
-    return R, rho
+    return R
 
 
 def linCoeff_cal(R):
