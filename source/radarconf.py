@@ -9,9 +9,8 @@ def radar_conf(radar_name, frequency):
 
     :param radar_name: input by user
     :param frequency: frequency at which the radar array is being operated [Mhz]
-    :return: lambda0: wave lenght corresponding to radar frequency [m]
-    :return: xycoords: coordinates of subarray centers w.r.t. center of radar configuration [m]
-    :return:
+    :return lambda0: wave lenght corresponding to radar frequency [m]
+    :return xycoords: coordinates of subarray centers w.r.t. center of radar configuration [m]
     """
 
     if radar_name == 'JONES':
@@ -34,13 +33,13 @@ def radar_conf(radar_name, frequency):
                              [-d / np.sqrt(2), -d/np.sqrt(2)],
                              [0, 0]])
     elif radar_name == 'Ydist':
-        lambda0 = lambda_caĺ(frequency=frequency)
+        lambda0 = lambda_cal(frequency=frequency)
         d = 3
         xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
                             [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
                             [0, -d],
                             [0, 0]])
     else:
-        raise Exception('The name you have given is not recognize by the defined satellite configurations. ')
+        raise Exception('The name you have given is not recognize by the defined radar configurations. ')
 
     return lambda0, xycoords

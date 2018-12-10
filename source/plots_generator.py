@@ -2,15 +2,17 @@ import os
 import matplotlib.pyplot as plt
 import numpy as np
 from functions import *
+from radarconf import radar_conf
 from scipy.constants import pi as pi
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 import h5py
+from matplotlib import rc
 rc('text', usetex=True)
 rc('font', family='serif')
 
 
-def generate_plots(radar_name, elevation, azimuth):
+def generate_plots(radar_name, frequency, elevation, azimuth):
 
     """
     Import results summary from ambiguity_calculator algorithm and plot results for a DOA given by azimuth and elevation
@@ -27,12 +29,12 @@ def generate_plots(radar_name, elevation, azimuth):
     radar = radar_name
     k0 = k0_cal(el0=elevation, az0=azimuth)
 
-    lambda0, xycoords, freq = radar_conf(radar_name=radar)
+    lambda0, xycoords = radar_conf(radar_name=radar, frequency=frequency)
 
     AmbiguityDistances = dict()
     intersections = dict()
 
-    with h5py.File('../processed_data/' + radar + '.h5', 'r') as hdf:
+    with h5py.File('../processed_data/' + radar + '/' + radar + '.h5', 'r') as hdf:
         G1 = hdf.get('trivial_calculations')
         Sn = np.array(G1.get('sensor_groups'))
         G2 = hdf.get('results_permutations')
@@ -142,4 +144,4 @@ def generate_plots(radar_name, elevation, azimuth):
     plt.show()
 
 
-generate_plots(radar_name='JONES', elevation=50, azimuth=270)
+# generate_plots(radar_name='Ydist', frequency=31, elevation=50, azimuth=270)

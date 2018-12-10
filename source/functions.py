@@ -11,7 +11,7 @@ def lambda_cal(frequency):
     Calculate the wave length of electromagnetic radiation given its frequency.
 
     :param frequency: Frequency of electromagnetic radiation [MHz]
-    :return: wavelength: wave length of electromagnetic radiation [m]
+    :return wavelength: wave length of electromagnetic radiation [m]
     """
 
     return c * 1e-6 / frequency
@@ -20,12 +20,10 @@ def lambda_cal(frequency):
 def R_cal(sensor_groups, xycoords):
     """
 
-    :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located
+    :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located \
     at the origin
     :param xycoords: locations of the subgroups [m]
-
-
-    :return: R: subgroup phase center
+    :return R: subgroup phase center
     """
 
     R = np.zeros((3, sensor_groups))
@@ -41,9 +39,8 @@ def linCoeff_cal(R):
     """
     Calculate linear coefficients given R.
 
-    :param R:
+    :param R
 
-    :return:
     """
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis=0)
@@ -59,7 +56,6 @@ def p0_jk(j, k, R, n0, K):
     :param R:
     :param n0:
     :param K:
-    :return:
     """
 
     return (n0[j] + 1 - k) / K[j] / np.linalg.norm(R[:, j], axis=0) * R[:, j]
@@ -70,11 +66,10 @@ def nvec_j(j, R):
     """
     Normalized vector normal to plane j. Each plane is given as a column in R.
 
-    ..math::
-        \vec{n}_{j} = \dfrac{\rec_{j}}{| \vec{r}_{j} |}
+    ..math::    \vec{n}_{j} = \dfrac{\rec_{j}}{| \vec{r}_{j} |}
 
-    :param j:
-    :param R:
+    :param j: index
+    :param R: subgroup phase center
     """
 
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
@@ -83,10 +78,9 @@ def nvec_j(j, R):
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
 
     """
-    Calculate the difference tha produces the use of the Moore-Penrose solution matrix to the algebraic equation
-
-    .. math::
-        W_{J} \vec{s} = \vec{b}_j
+    Calculate the difference tha produces the use of the Moore-Penrose solution matrix to the algebraic equation in \
+    paper
+.
 
     :param W:
     :param Wpinv:
@@ -94,7 +88,6 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
     :param intersection_line_set:
     :param pinv_norm_set:
     :param ind_range:
-    :return:
     """
 
     for ind in ind_range:
@@ -152,19 +145,41 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
     for t in threads:
         t.join()
 
+def mooore_penrose_solution (W, b):
+
+    """
+    Calculate the difference that produces the use of the Moore-Penrose solution matrix to the algebraic equation
+
+    ..:math: '$W_{J} \vec{s} = \vec{b}_j$'
+
+    :param W: W matrix as described in paper
+    :param b: b vector as described in paper
+    :return intersection_line: matrix of intersection lines
+    :return pinv_norm: difference after solution check
+
+    """
+
+    Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
+    intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
+    pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
+
+    return intersection_line, pinv_norm
+
 
 def intersections_cal(pinv_norm, PERMS_J, intersection_line, R, **kwargs):
 
     """
-    Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose error
-    is below a given tolerance value.
+    Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose \
+    error is below a given tolerance value.
 
-    :param pinv_norm: distance from
-    :param PERMS_J:
-    :param intersection_line:
-    :param R:
-    :param kwargs:
-    :return:
+    :param pinv_norm: distance from real b_vector and the one obtained by the moore_penrose solution
+    :param PERMS_J: Valid combinations
+    :param intersection_line: matrix of intersection lines
+    :param R: subgroup phase center
+    :param kwargs: if 'norm' an extra condition will be applied and is that if pinv_norm is greater than zero, it \
+    will disregarded.
+    :return intersections: dictionary with the so far valid intersection combinations.
+
     """
     mp_tol = 0.1
     intersections = dict()
@@ -208,15 +223,10 @@ def permutations_create(permutations_base, intersections_ind, k_length, permutat
 def k0_cal(el0, az0):
 
     """
-    Calculation of wave vector defined as
+    Calculation of wave vector defined defined in paper.
 
-    .. math::
-        \vec{k}(\theta, \phi) = \begin{pmatrix} sin(\theta) cos(\phi)\\ cos(\theta) cos(\phi)\\ sin(\phi) \end{pmatrix}
-
-
-    :param el0:
-    :param az0:
-    :return:
+    :param el0: elevation angle [º]
+    :param az0: azimuth angle [º]
     """
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
@@ -224,6 +234,17 @@ def k0_cal(el0, az0):
 
 
 def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang):
+
+    """
+    Find all s-lines that intersect with the cap by range check.
+
+
+    :param k0: wave vector
+    :param intersections_ind: indexes of valid combinations
+    :param intersection_line: intersection lines matrix
+    :param cutoff_ph_ang: cut-off angle
+    """
+
 
     cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - \
           intersection_line[0:2, intersections_ind]
@@ -234,6 +255,19 @@ def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang
 
 
 def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, xy, k0):
+
+    """
+    Calculation of ambiguities
+
+    :param intersection_line: matrix of intersection lines
+    :param intersections_ind: valid intersection indexes
+    :param cap_intersections_of_slines: cap?
+    :param xy: xy coordinates of radar subgroups
+    :param k0: signal wave vector
+    :return ambiguity_distances_explicit: ambiguity distances
+    :return ambiguity_normal_explicit:
+    :return k_finds:
+    """
 
     s_sel = intersection_line[:, intersections_ind[cap_intersections_of_slines]]
 

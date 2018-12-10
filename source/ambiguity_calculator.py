@@ -1,6 +1,7 @@
 import os
 import numpy as np
 from functions import *
+from radarconf import radar_conf
 import itertools
 from scipy.constants import pi as pi
 from time import time, gmtime, strftime
@@ -209,6 +210,4 @@ def ambiguities_calculate(radar_name, frequency):
     print(time()-t)
 
 
-if __name__ == "__main__":
-
-    ambiguities_calculate(radar_name='JONES', frequency=31)
+# ambiguities_calculate(radar_name='Ydist', frequency=31)
