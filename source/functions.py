@@ -1,8 +1,9 @@
-from scipy.constants import speed_of_light as c # [m/s]
+from scipy.constants import speed_of_light as c  # [m/s]
 from scipy.constants import pi as pi
 import numpy as np
 import itertools
 import threading
+
 
 def lambda_cal(frequency):
 
@@ -15,44 +16,12 @@ def lambda_cal(frequency):
 
     return c * 1e-6 / frequency
 
-def radar_conf(radar_name):
-
-    if radar_name == 'JONES':
-        freq = 31
-        lambda0 = lambda_cal(frequency=freq)
-        xycoords = np.array([[0, 2],
-                             [0, -2.5],
-                             [-2, 0],
-                             [2.5, 0],
-                             [0, 0]])
-    elif radar_name == 'symmetric1':
-        freq = 31
-        d = 3
-        lambda0 = lambda_cal(frequency=freq)
-        xycoords = np.array([[d, 0],
-                             [-d, 0],
-                             [0, d],
-                             [0, -d],
-                             [d / np.sqrt(2), d/np.sqrt(2)],
-                             [-d / np.sqrt(2), d/np.sqrt(2)],
-                             [d / np.sqrt(2), -d/np.sqrt(2)],
-                             [-d / np.sqrt(2), -d/np.sqrt(2)],
-                             [0, 0]])
-    elif radar_name == 'Ydist':
-        freq = 31
-        lambda0 = lambda_caĺ(frequency=freq)
-        d = 3
-        xycoords = np.array([[d * np.cos(np.radians(67.5)), d * np.sin(np.radians(67.5))],
-                            [d * np.cos(np.radians(112.5)), d * np.sin(np.radians(112.5))],
-                            [0, -d],
-                            [0, 0]])
-    return lambda0, xycoords, freq
-
 
 def R_cal(sensor_groups, xycoords):
     """
 
-    :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located at the origin
+    :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located
+    at the origin
     :param xycoords: locations of the subgroups [m]
 
 
@@ -102,16 +71,9 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
 
 
-# this wraps mooore_penrose_solution to do parallel calculations
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
-    # b_set is a matrix with columns as the vectors
-    #
-    # maybe we should use generators all the way here but its
-    # too intrecate too include now
-    # maybe at a later stage if memory footprint is a problem
 
     """
-
     Calculate the Moore-Penrose solution for each case making use of parallel threading to parallelize task
     and joining results. Calls the function moore_penrose_solution_ptr
 
@@ -158,7 +120,6 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
         t.join()
 
 
-# TODO test function moore_penrose_solution
 def mooore_penrose_solution(W, b):
 
     Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
