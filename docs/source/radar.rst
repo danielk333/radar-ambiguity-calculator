@@ -1,5 +1,14 @@
-FElipe-python-tools's **plot** module
+Tool for radar ambiguity solution
 ================================================
+.. automodule:: ambiguity_calculator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: plots_generator
+   :members:
+   :undoc-members:
+   :show-inheritance:
 
 .. automodule:: radarconf
    :members:
@@ -10,3 +19,5 @@ FElipe-python-tools's **plot** module
    :members:
    :undoc-members:
    :show-inheritance:
+
+

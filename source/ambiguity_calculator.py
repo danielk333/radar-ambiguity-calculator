@@ -7,7 +7,6 @@ from time import time, gmtime, strftime
 import h5py
 
 
-
 def ambiguities_calculate(radar_name, frequency):
     """
     Calculates the solution for the radar ambiguity problem by implementing developed by Daniel Kastinen in his paper
@@ -15,6 +14,7 @@ def ambiguities_calculate(radar_name, frequency):
     summarized in a .h5 file with HDF5 format and saved into the /processed_data folder
 
     :param radar_name: Name of the radar to be studied out of a list of defined configurations.
+    :param frequency: Operating frequency [MHz]
     """
 
     radar_name = radar_name
