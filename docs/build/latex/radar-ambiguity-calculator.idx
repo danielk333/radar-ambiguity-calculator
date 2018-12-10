@@ -1,0 +1,20 @@
+\indexentry{ambiguity\_calculator (module)|hyperpage}{3}
+\indexentry{ambiguities\_calculate() (in module ambiguity\_calculator)|hyperpage}{3}
+\indexentry{plots\_generator (module)|hyperpage}{5}
+\indexentry{generate\_plots() (in module plots\_generator)|hyperpage}{5}
+\indexentry{functions (module)|hyperpage}{7}
+\indexentry{R\_cal() (in module functions)|hyperpage}{7}
+\indexentry{explicit() (in module functions)|hyperpage}{7}
+\indexentry{intersections\_cal() (in module functions)|hyperpage}{7}
+\indexentry{k0\_cal() (in module functions)|hyperpage}{7}
+\indexentry{lambda\_cal() (in module functions)|hyperpage}{8}
+\indexentry{linCoeff\_cal() (in module functions)|hyperpage}{8}
+\indexentry{mooore\_penrose\_solution() (in module functions)|hyperpage}{8}
+\indexentry{mooore\_penrose\_solution\_par() (in module functions)|hyperpage}{8}
+\indexentry{mooore\_penrose\_solution\_ptr() (in module functions)|hyperpage}{8}
+\indexentry{nvec\_j() (in module functions)|hyperpage}{9}
+\indexentry{p0\_jk() (in module functions)|hyperpage}{9}
+\indexentry{permutations\_create() (in module functions)|hyperpage}{9}
+\indexentry{slines\_intersections() (in module functions)|hyperpage}{9}
+\indexentry{radarconf (module)|hyperpage}{11}
+\indexentry{radar\_conf() (in module radarconf)|hyperpage}{11}

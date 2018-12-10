@@ -4,4 +4,3 @@ Tool for generating plots
    :members:
    :undoc-members:
    :show-inheritance:
-
