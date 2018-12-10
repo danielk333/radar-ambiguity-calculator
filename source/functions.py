@@ -8,7 +8,7 @@ import threading
 def lambda_cal(frequency):
 
     """
-    Calculates the wave length of electromagnetic radiation given its frequency.
+    Calculate the wave length of electromagnetic radiation given its frequency.
 
     :param frequency: Frequency of electromagnetic radiation [MHz]
     :return: wavelength: wave length of electromagnetic radiation [m]
@@ -80,16 +80,29 @@ def nvec_j(j, R):
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
 
-# TODO test function for this section
-# pointer version
 def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_norm_set, ind_range):
+
+    """
+    Calculate the difference tha produces the use of the Moore-Penrose solution matrix to the algebraic equation
+
+    .. math::
+        W_{J} \vec{s} = \vec{b}_j
+
+    :param W:
+    :param Wpinv:
+    :param b_set:
+    :param intersection_line_set:
+    :param pinv_norm_set:
+    :param ind_range:
+    :return:
+    """
 
     for ind in ind_range:
         b = b_set[:, ind].view()
 
         Moore_Penrose_solution_check = np.linalg.multi_dot([W, Wpinv, b]) - b
-        intersection_line_set[:, ind] = np.dot(Wpinv, b)
         pinv_norm_set[ind] = np.linalg.norm(Moore_Penrose_solution_check)
+        intersection_line_set[:, ind] = np.dot(Wpinv, b)
 
 
 def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pinv_norm_set):
@@ -140,21 +153,20 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
         t.join()
 
 
-def intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs):
+def intersections_cal(pinv_norm, PERMS_J, intersection_line, R, **kwargs):
 
     """
     Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose error
     is below a given tolerance value.
 
     :param pinv_norm: distance from
-    :param mp_tol: Error tolerance
     :param PERMS_J:
     :param intersection_line:
     :param R:
     :param kwargs:
     :return:
     """
-
+    mp_tol = 0.1
     intersections = dict()
 
     if 'norm' in kwargs:
@@ -178,14 +190,14 @@ def intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs
 def permutations_create(permutations_base, intersections_ind, k_length, permutation_index):
 
     """
-    Create all possible permutations by combining current permutation combinations with valid indexes and ...???
+    Create all possible permutations by combining current permutation combinations with valid indexes and new
 
 
-    :param permutations_base:
-    :param intersections_ind:
-    :param k_length:
-    :param permutation_index:
-    :return:
+    :param permutations_base: set of combinations created so far
+    :param intersections_ind: indexes of valid combinations
+    :param k_length: set of elements to create new permutations, k
+    :param permutation_index: index of current permutation. Chooses k_j
+
     """
 
     iterables = [np.array(permutations_base)[intersections_ind[0], :], range(1, int(k_length[permutation_index]) + 1)]

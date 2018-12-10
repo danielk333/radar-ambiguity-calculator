@@ -35,9 +35,6 @@ def ambiguities_calculate(radar_name, frequency):
     log.write('frequency (f) = ' + str(frequency) + 'MHz \r\n')
     log.write('array positions: ' + '\r\n')
 
-    # Tolerance value for moore_penrose_solution
-    mp_tol = 1e-1
-
     # Number os sensor groups. Don't count on the last sensor group since it points at the origin of the radar
     # configuration.
     Sn = np.shape(xycoords)[0] - 1
@@ -91,7 +88,6 @@ def ambiguities_calculate(radar_name, frequency):
     intersection_line_norm = np.transpose(np.sqrt([np.sum(intersection_line ** 2, axis=0)]))
 
     intersections = intersections_cal(pinv_norm=pinv_norm,
-                                      mp_tol=mp_tol,
                                       PERMS_J=PERMS_J,
                                       intersection_line=intersection_line,
                                       R=R, norm=intersection_line_norm)
@@ -153,7 +149,7 @@ def ambiguities_calculate(radar_name, frequency):
 
         PERMS_J = PERMS_J_prime
 
-        intersections = intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R)
+        intersections = intersections_cal(pinv_norm, PERMS_J, intersection_line, R)
 
         SURVIVORS[ii-2] = intersections['number']
 
