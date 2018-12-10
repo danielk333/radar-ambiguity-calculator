@@ -52,7 +52,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'radar-ambiguity-calculator'
+project = 'Radar Ambiguity Calculator (RAC)'
 copyright = '2018, Daniel Kastinen & Felipe Betancourt'
 author = 'Daniel Kastinen & Felipe Betancourt'
 
@@ -114,7 +114,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -178,7 +178,7 @@ html_static_path = ['_static']
 #html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
 #html_show_copyright = True
@@ -272,7 +272,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'radar-ambiguity-calculator', 'radar-ambiguity-calculator Documentation',
+    (master_doc, 'radar-ambiguity-calculator', 'Radar Ambiguity Calculator (RAC) Documentation',
      author, 'radar-ambiguity-calculator', 'One line description of project.',
      'Miscellaneous'),
 ]

@@ -7,7 +7,7 @@ class TestFunctions(unittest.TestCase):
 
     def test_lambda0(self):
 
-        self.assertEqual(lambda0(frequency=31), 9.670724451612903)
+        self.assertEqual(lambda_cal(frequency=31), 9.670724451612903)
 
     def test_intersections_cal(self):
 

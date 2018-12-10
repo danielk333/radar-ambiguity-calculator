@@ -39,8 +39,7 @@ def linCoeff_cal(R):
     """
     Calculate linear coefficients given R.
 
-    :param R
-
+    :param R: matrix of subgroup phase centers
     """
 
     return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis=0)
@@ -66,8 +65,6 @@ def nvec_j(j, R):
     """
     Normalized vector normal to plane j. Each plane is given as a column in R.
 
-    ..math::    \vec{n}_{j} = \dfrac{\rec_{j}}{| \vec{r}_{j} |}
-
     :param j: index
     :param R: subgroup phase center
     """
@@ -79,15 +76,14 @@ def mooore_penrose_solution_ptr(W, Wpinv, b_set, intersection_line_set, pinv_nor
 
     """
     Calculate the difference tha produces the use of the Moore-Penrose solution matrix to the algebraic equation in \
-    paper
-.
+    paper.
 
-    :param W:
-    :param Wpinv:
-    :param b_set:
-    :param intersection_line_set:
-    :param pinv_norm_set:
-    :param ind_range:
+    :param W: W matrix
+    :param Wpinv: Pseudo-inverser of W matrix
+    :param b_set: set of b vctors
+    :param intersection_line_set: matrix of intersection lines
+    :param pinv_norm_set: matrix of pinv_norm vectors
+    :param ind_range: index
     """
 
     for ind in ind_range:
@@ -149,8 +145,6 @@ def mooore_penrose_solution (W, b):
 
     """
     Calculate the difference that produces the use of the Moore-Penrose solution matrix to the algebraic equation
-
-    ..:math: '$W_{J} \vec{s} = \vec{b}_j$'
 
     :param W: W matrix as described in paper
     :param b: b vector as described in paper

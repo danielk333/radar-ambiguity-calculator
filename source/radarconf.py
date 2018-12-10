@@ -10,7 +10,7 @@ def radar_conf(radar_name, frequency):
     :param radar_name: input by user
     :param frequency: frequency at which the radar array is being operated [Mhz]
     :return lambda0: wave lenght corresponding to radar frequency [m]
-    :return xycoords: coordinates of subarray centers w.r.t. center of radar configuration [m]
+    :return xycoords: coordinates of subarray centers w.r.t. center of radar configuration in wavelengths.
     """
 
     if radar_name == 'JONES':
