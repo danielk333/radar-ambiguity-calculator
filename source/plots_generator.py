@@ -1,3 +1,4 @@
+import os
 import matplotlib.pyplot as plt
 import numpy as np
 from functions import *
@@ -5,13 +6,23 @@ from scipy.constants import pi as pi
 from mpl_toolkits.mplot3d import Axes3D
 from matplotlib.ticker import MaxNLocator
 import h5py
-from matplotlib import rc
-
 rc('text', usetex=True)
 rc('font', family='serif')
 
+
 def generate_plots(radar_name, elevation, azimuth):
 
+    """
+    Import results summary from ambiguity_calculator algorithm and plot results for a DOA given by azimuth and elevation
+    angles.
+
+    :param radar_name: choose radar configuration
+    :param elevation: DOA elevation angle [º]
+    :param azimuth: DOA azimuth angle [º]
+    """
+
+    if not os.path.exists('../results/'+radar_name):
+        os.makedirs('../results/'+radar_name)
 
     radar = radar_name
     k0 = k0_cal(el0=elevation, az0=azimuth)
@@ -51,7 +62,8 @@ def generate_plots(radar_name, elevation, azimuth):
 
 
     fig1, ax1 = plt.subplots()
-    ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o', label='Sensor position')
+    ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o',
+                label='Sensor position')
     ax1.grid(which='both')
     ax1.set_xlabel('x [m]', fontsize=14)
     ax1.set_ylabel('y [m]', fontsize=14)
@@ -69,7 +81,8 @@ def generate_plots(radar_name, elevation, azimuth):
     fig2.savefig('../results/'+radar+'/figure2', format='eps')
 
     fig3, ax3 = plt.subplots()
-    ax3.scatter(intersection_line[0, intersections['indexes'][0]], intersection_line[1, intersections['indexes'][0]], s=40)
+    ax3.scatter(intersection_line[0, intersections['indexes'][0]], intersection_line[1, intersections['indexes'][0]],
+                s=40)
     ax3.grid(which='both')
     ax3.set_xlabel(r'$s_{x}$ \ [1]', fontsize=14)
     ax3.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)

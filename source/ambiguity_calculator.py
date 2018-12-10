@@ -17,10 +17,14 @@ def ambiguities_calculate(radar_name, frequency):
     :param frequency: Operating frequency [MHz]
     """
 
-    radar_name = radar_name
+    # Start timer
+    t = time()
 
+    # Define radar configuration
     lambda0, xycoords = radar_conf(radar_name=radar_name, frequency=frequency)
 
+    # Create /processed_data folder if it doesn't exist. Here results of calculation will be stored together with
+    # .log file.
     if not os.path.exists('../processed_data/'+radar_name):
         os.makedirs('../processed_data/'+radar_name)
 
@@ -31,14 +35,14 @@ def ambiguities_calculate(radar_name, frequency):
     log.write('frequency (f) = ' + str(frequency) + 'MHz \r\n')
     log.write('array positions: ' + '\r\n')
 
-    # CODE STARTS HERE
+    # Tolerance value for moore_penrose_solution
     mp_tol = 1e-1
 
-    # Do not count the last group as it is defined as the origin
-    # Sn : sensor_groups
+    # Number os sensor groups. Don't count on the last sensor group since it points at the origin of the radar
+    # configuration.
     Sn = np.shape(xycoords)[0] - 1
 
-    ##
+    ## Calcualte subgroup phase center
     R = R_cal(sensor_groups=Sn, xycoords=xycoords)
 
     # Calculate linear coefficients
@@ -61,15 +65,17 @@ def ambiguities_calculate(radar_name, frequency):
               + ' permutations of 3 planes. \r\n')
 
     # 3 first sets of planes
-
     I = ([0, 1, 2])
 
     W_matrix = np.transpose(R[:, 0:3]/np.tile(np.linalg.norm(R[:, 0:3], axis=0), (3, 1)))
 
+    # initialize variable to store the distance to the real b_vector to the moore_penrose solution.
     pinv_norm = np.zeros((int(PERMS_number), 1))
+
+    # initialize variable to store the lines of intersections.
     intersection_line = np.zeros((3, int(PERMS_number)))
 
-    # Start looping over all combinations
+    # Start looping over first three combinations
 
     for aux, j in enumerate(PERMS_J):
 
@@ -209,5 +215,4 @@ def ambiguities_calculate(radar_name, frequency):
 
 if __name__ == "__main__":
 
-    t = time()
     ambiguities_calculate(radar_name='JONES', frequency=31)

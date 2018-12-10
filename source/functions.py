@@ -46,15 +46,36 @@ def linCoeff_cal(R):
     :return:
     """
 
-    return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis= 0)
+    return np.sum(R ** 2, axis=0) / np.linalg.norm(R, axis=0)
 
 
 def p0_jk(j, k, R, n0, K):
+
+    """
+    Displacement point
+
+    :param j:
+    :param k:
+    :param R:
+    :param n0:
+    :param K:
+    :return:
+    """
 
     return (n0[j] + 1 - k) / K[j] / np.linalg.norm(R[:, j], axis=0) * R[:, j]
 
 
 def nvec_j(j, R):
+
+    """
+    Normalized vector normal to plane j. Each plane is given as a column in R.
+
+    ..math::
+        \vec{n}_{j} = \dfrac{\rec_{j}}{| \vec{r}_{j} |}
+
+    :param j:
+    :param R:
+    """
 
     return R[:, j] / np.linalg.norm(R[:, j], axis=0)
 
@@ -77,14 +98,13 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
     Calculate the Moore-Penrose solution for each case making use of parallel threading to parallelize task
     and joining results. Calls the function moore_penrose_solution_ptr
 
-    :param W: Matrix representation of all the normal vector of the planes going through the interserction.
+    :param W: Matrix representation of all the normal vector of the planes going through the intersection.
     :param b_set: Set ob b vectors for which the solution is going to be computed.
     :param pnum: Number of cores for parallelizing
     :param niter: number of permutations.
     :param intersection_line_set: initial array with zeros where the intersection lines will be allocated.
     :param pinv_norm_set: error in the MP solution approximation
 
-    :return:
     """
 
     Wpinv = np.linalg.pinv(W)
@@ -118,15 +138,6 @@ def mooore_penrose_solution_par(W, b_set, pnum, niter, intersection_line_set, pi
 
     for t in threads:
         t.join()
-
-
-def mooore_penrose_solution(W, b):
-
-    Moore_Penrose_solution_check = np.linalg.multi_dot([W, np.linalg.pinv(W), b]) - b
-    intersection_line = np.dot(np.linalg.pinv(W), b)[:, 0]
-    pinv_norm= np.linalg.norm(Moore_Penrose_solution_check)
-
-    return intersection_line, pinv_norm
 
 
 def intersections_cal(pinv_norm, mp_tol, PERMS_J, intersection_line, R, **kwargs):
@@ -183,6 +194,18 @@ def permutations_create(permutations_base, intersections_ind, k_length, permutat
 
 
 def k0_cal(el0, az0):
+
+    """
+    Calculation of wave vector defined as
+
+    .. math::
+        \vec{k}(\theta, \phi) = \begin{pmatrix} sin(\theta) cos(\phi)\\ cos(\theta) cos(\phi)\\ sin(\phi) \end{pmatrix}
+
+
+    :param el0:
+    :param az0:
+    :return:
+    """
 
     return [np.sin(np.radians(az0)) * np.cos(np.radians(el0)), np.cos(np.radians(az0)) * np.cos(
         np.radians(el0)), np.sin(np.radians(el0))]
