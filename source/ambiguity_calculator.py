@@ -12,7 +12,8 @@ def ambiguities_calculate(radar_name, frequency):
     """
     Calculates the solution for the radar ambiguity problem by implementing developed by Daniel Kastinen in his paper
     "Determining all ambiguities in direction of arrival measured by radar systems". The output of the calculations is
-    summarized in a .h5 file with HDF5 format and saved into the /processed_data folder
+    summarized in a .h5 file with HDF5 format and saved into the /processed_data folder. Also a .log file is generated
+    with a summary of the calculation process.
 
     :param radar_name: Name of the radar to be studied out of a list of defined configurations.
     :param frequency: Operating frequency [MHz]
@@ -171,6 +172,7 @@ def ambiguities_calculate(radar_name, frequency):
     intersections_integers_complete = np.vstack((np.zeros(
         (1, np.shape(intersections['integers'])[1])), intersections['integers']))
 
+    # Calculate ambiguity distances and organize into a dictionary
     AmbiguityDistances = dict()
     AmbiguityDistances['int_form_mat'] = np.abs(intersections_integers_complete
                                                 - np.round(intersections_integers_complete))
@@ -183,6 +185,7 @@ def ambiguities_calculate(radar_name, frequency):
     log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime()) + ' : Time elapsed for main calculations was ' + str(time()-t)
               + ' seconds \r\n')
 
+    # Save results
     with h5py.File('../processed_data/' + radar_name + '/' + radar_name + '.h5', 'w') as hdf:
 
         G1 = hdf.create_group('trivial_calculations')
@@ -205,9 +208,7 @@ def ambiguities_calculate(radar_name, frequency):
     log.write(strftime("%Y-%m-%d %H:%M:%S", gmtime())
               + ' : Results exported to /processed_data/' + radar_name + '.h5 \r\n')
 
+    # Finish logging.
     log.close()
 
     print(time()-t)
-
-
-# ambiguities_calculate(radar_name='Ydist', frequency=31)

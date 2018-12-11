@@ -19,7 +19,6 @@ def lambda_cal(frequency):
 
 def R_cal(sensor_groups, xycoords):
     """
-
     :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located \
     at the origin
     :param xycoords: locations of the subgroups [m]
@@ -239,8 +238,7 @@ def slines_intersections(k0, intersections_ind, intersection_line, cutoff_ph_ang
     :param cutoff_ph_ang: cut-off angle
     """
 
-
-    cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) - \
+    cap = np.repeat([[k0[0]], [k0[1]]], repeats=len(intersections_ind), axis=1) -\
           intersection_line[0:2, intersections_ind]
     cap = np.sqrt(np.sum(cap ** 2, axis=0))
     cap = np.where(cap <= np.sin(cutoff_ph_ang))

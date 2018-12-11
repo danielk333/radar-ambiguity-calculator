@@ -6,7 +6,7 @@ Solve the problem for a certain radar configuration
 
 As an example take one of the radar configurations, **JONES** in this case, with a frequency of 31 MHz.
 
-The coordinates of the subarray are
+The coordinates of the subarray in wave lengths are
 
 ==== ====
 x    y
@@ -60,6 +60,27 @@ JONES.h5 contains several items, data sets. Organized between two main HDF5 grou
 
 Use the results to see the ambiguities for a DOA.
 ##################################################
+
+Continuing with JONES radar configuration, if one runs another script with
+
+::
+
+    import os
+    import matplotlib.pyplot as plt
+    import numpy as np
+    from functions import *
+    from radarconf import radar_conf
+    from scipy.constants import pi as pi
+    from mpl_toolkits.mplot3d import Axes3D
+    from matplotlib.ticker import MaxNLocator
+    import h5py
+    from matplotlib import rc
+    rc('text', usetex=True)
+    rc('font', family='serif')
+
+    generate_plots(radar_name='JONES', frequency=31, elevation=50, azimuth=270)
+
+the same HDF5 file will the imported and plots with the results will be generated.
 
 .. figure:: figures/figure1.png
     :scale: 80%

@@ -23,6 +23,7 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     :param azimuth: DOA azimuth angle [º]
     """
 
+    # Create folder for results if it does not exist.
     if not os.path.exists('../results/'+radar_name):
         os.makedirs('../results/'+radar_name)
 
@@ -34,6 +35,7 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     AmbiguityDistances = dict()
     intersections = dict()
 
+    # Open corresponding HDF5 file and pick necessary data set
     with h5py.File('../processed_data/' + radar + '/' + radar + '.h5', 'r') as hdf:
         G1 = hdf.get('trivial_calculations')
         Sn = np.array(G1.get('sensor_groups'))
@@ -43,7 +45,6 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
         SURVIVORS = np.array(G2.get('survivors'))
         intersection_line = np.array(G2.get('intersection_line'))
         intersections['indexes'] = np.array(G2.get('intersection_indexes'))
-
 
     cutoff_ph_ang = pi/2
 
@@ -60,8 +61,8 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
                    cap_intersections_of_slines=cap_intersections_of_slines,
                    xy=xycoords,
                    k0=k0)
-
-
+    
+    format_save = 'eps'
 
     fig1, ax1 = plt.subplots()
     ax1.scatter(xycoords[:, 0] * lambda0, xycoords[:, 1] * lambda0, s=85, alpha=0.85, marker='o',
@@ -70,17 +71,17 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     ax1.set_xlabel('x [m]', fontsize=14)
     ax1.set_ylabel('y [m]', fontsize=14)
     ax1.set_title(r'\textbf{' + radar + ' radar sensor configuration}', fontsize=14)
-    fig1.savefig('../results/'+radar+'/figure1', format='eps')
+    fig1.savefig('../results/'+radar+'/figure1', format=format_save)
 
     fig2, ax2 = plt.subplots()
-    ax2.plot(range(3, Sn+1), SURVIVORS, 'bs')
+    ax2.plot(range(3, int(Sn)+1), SURVIVORS, 'bs')
     ax2.xaxis.set_major_locator(MaxNLocator(integer=True))
     ax2.yaxis.set_major_locator(MaxNLocator(integer=True))
     ax2.grid(which='both')
     ax2.set_xlabel('Number of sensors included', fontsize=14)
     ax2.set_ylabel('Number of common plane intersections', fontsize=14)
     ax2.set_title(r'\textbf{Intersection plane counts}', fontsize=14)
-    fig2.savefig('../results/'+radar+'/figure2', format='eps')
+    fig2.savefig('../results/'+radar+'/figure2', format=format_save)
 
     fig3, ax3 = plt.subplots()
     ax3.scatter(intersection_line[0, intersections['indexes'][0]], intersection_line[1, intersections['indexes'][0]],
@@ -90,7 +91,7 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     ax3.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)
     ax3.set_title(r'\textbf{Intersection lines}', fontsize=14)
     ax3.set_aspect('equal')
-    fig3.savefig('../results/'+radar+'/figure3', format='eps')
+    fig3.savefig('../results/'+radar+'/figure3', format=format_save)
 
     fig4 = plt.figure()
     ax4 = fig4.gca(projection='3d')
@@ -110,38 +111,37 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     ax4.set_ylabel(r'$s_{y} \ [1]$', fontsize=14)
     ax4.set_zlabel(r'$s_{z} \ [1]$', fontsize=14)
     ax4.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
-    fig4.savefig('../results/'+radar+'/figure4', format='eps')
+    fig4.savefig('../results/'+radar+'/figure4', format=format_save)
 
     circ_cutoff_ph_ang_x = np.sin(cutoff_ph_ang) * np.cos(np.linspace(start=0, stop=2*pi, num=100))
     circ_cutoff_ph_ang_y = np.sin(cutoff_ph_ang) * np.sin(np.linspace(start=0, stop=2*pi, num=100))
 
-    fig6, ax6 = plt.subplots()
+    fig5, ax5 = plt.subplots()
     for S_ind in range(0, len(intersections['indexes'][0])):
         s_point = intersection_line[:, intersections['indexes'][0][S_ind]]
-        ax6.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
+        ax5.scatter(s_point[0], s_point[1], s=20, c=(0, 0, 1), alpha=0.6)
         plt.text(s_point[0]+0.03, s_point[1]+0.03, "%0.2f" % AmbiguityDistances['wave_form'][S_ind])
-    ax6.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
-    ax6.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
-    ax6.grid(which='both')
-    ax6.set_xlabel(r'$s_{x}$ \ [1]', fontsize=14)
-    ax6.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)
-    ax6.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
-    ax6.set_aspect('equal')
-    fig6.savefig('../results/'+radar+'/figure6', format='eps')
+    ax5.plot(circ_cutoff_ph_ang_x, circ_cutoff_ph_ang_y)
+    ax5.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
+    ax5.grid(which='both')
+    ax5.set_xlabel(r'$s_{x}$ \ [1]', fontsize=14)
+    ax5.set_ylabel(r'$s_{y}$ \ [1]', fontsize=14)
+    ax5.set_title(r'\textbf{Solution set $\Omega$}', fontsize=14)
+    ax5.set_aspect('equal')
+    fig5.savefig('../results/'+radar+'/figure5', format='eps')
 
-    fig7, ax7 = plt.subplots()
-    ax7.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
+    fig6, ax6 = plt.subplots()
+    ax6.scatter(k0[0], k0[1], facecolors='none', edgecolors='r', s=20)
     for i in range(0, np.shape(k_finds)[1]):
-        ax7.scatter(k_finds[0, i], k_finds[1, i], s=20, c=(0, 0, 1), alpha=0.6)
+        ax6.scatter(k_finds[0, i], k_finds[1, i], s=20, c=(0, 0, 1), alpha=0.6)
         plt.text(k_finds[0, i] + 0.1, k_finds[1, i] + 0.1, "%0.2f" % ambiguity_distances_explicit[i])
-    ax7.grid(which='both')
-    ax7.set_xlabel(r'$k_{x}$ \ [1]', fontsize=14)
-    ax7.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=14)
-    ax7.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
-    ax7.set_aspect('equal')
-    fig7.savefig('../results/'+radar+'/figure7', format='eps')
+    ax6.grid(which='both')
+    ax6.set_xlabel(r'$k_{x}$ \ [1]', fontsize=14)
+    ax6.set_ylabel(r'$sk_{y}$ \ [1]', fontsize=14)
+    ax6.set_title(r'\textbf{Solution set $\Omega (k)$}', fontsize=14)
+    ax6.set_aspect('equal')
+    fig6.savefig('../results/'+radar+'/figure6', format=format_save)
 
     plt.show()
 
-
-# generate_plots(radar_name='Ydist', frequency=31, elevation=50, azimuth=270)
+generate_plots(radar_name='JONES', frequency=31, elevation=50, azimuth=270)
