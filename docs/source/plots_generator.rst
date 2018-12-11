@@ -1,8 +1,6 @@
-Tool for radar ambiguity solution
+Tool for generating plots
 ================================================
-.. automodule:: ambiguity_calculator
+.. automodule:: plots_generator
    :members:
    :undoc-members:
    :show-inheritance:
-
-

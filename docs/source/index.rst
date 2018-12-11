@@ -6,14 +6,17 @@
 Welcome to radar-ambiguity-calculator's documentation!
 ======================================================
 
-Contents:
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
-	
-   radar
 
+   introduction
+   radar
+   plots_generator
+   functions
+   radarconf
+   test_example
 
 
 Indices and tables

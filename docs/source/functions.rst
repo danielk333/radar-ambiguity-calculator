@@ -1,8 +1,7 @@
-Tool for radar ambiguity solution
+List of functions used during the calculations
 ================================================
-.. automodule:: ambiguity_calculator
+
+.. automodule:: functions
    :members:
    :undoc-members:
    :show-inheritance:
-
-
