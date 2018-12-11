@@ -1,7 +1,7 @@
 *.pyc
 .idea/
-processed_data/
+data/
+matlab/
 source/.pytest_cache/
-results/
 docs/build/doctrees
 
