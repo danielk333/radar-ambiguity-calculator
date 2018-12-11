@@ -2,4 +2,6 @@
 .idea/
 processed_data/
 source/.pytest_cache/
+results/
+docs/build
 

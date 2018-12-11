@@ -8,17 +8,17 @@ clear all; close all; clc
 C = 299.792458;% Speed of light in Mega m/s
 F0 = 31;% 47.0 MHz
 lambda0=C/F0;% meter
-% 
-% 
-xy = [...
-    0, 2;...
-    0, -2.5;...
-    -2, 0;...
-    2.5, 0;...
-    0, 0];
-xpos = zeros(size(xy,1),1)*lambda0;
-ypos = zeros(size(xy,1),1)*lambda0;
-zpos = zeros(size(xy,1),1)*lambda0;
+% % 
+% % 
+% xy = [...
+%     0, 2;...
+%     0, -2.5;...
+%     -2, 0;...
+%     2.5, 0;...
+%     0, 0];
+% xpos = zeros(size(xy,1),1)*lambda0;
+% ypos = zeros(size(xy,1),1)*lambda0;
+% zpos = zeros(size(xy,1),1)*lambda0;
 % 
 % 
 % 
@@ -97,7 +97,7 @@ c0 = 2.99792e8;
 %%%%%%%%%%%%%%%%
 %%% TEST BY GENERATING A PERFECT SYMMETRIC ARRAY
 %%%%%%%%%%%%%%%%
-% d = 3;
+d = 3;
 % % xy = [d,0;...
 % %     -d,0;...
 % %     0,d;...
@@ -116,14 +116,14 @@ c0 = 2.99792e8;
 % xpos = zeros(5,1);
 % ypos = zeros(5,1);
 % zpos = zeros(5,1);
-% 
-% xy = [d*cosd(67.5),d*sind(67.5);...
-%     d*cosd(112.5),d*sind(112.5);...
-%     0,-d;...
-%     0,0];
-% xpos = (zeros(4,4) + repmat([0,0,-d/6,d/6],4,1) + repmat(xy(:,1),1,4))*lambda0;
-% ypos = (zeros(4,4) + repmat([-d/6,d/6,0,0],4,1) + repmat(xy(:,2),1,4))*lambda0;
-% zpos = zeros(4,4);
+
+xy = [d*cosd(67.5),d*sind(67.5);...
+    d*cosd(112.5),d*sind(112.5);...
+    0,-d;...
+    0,0];
+xpos = (zeros(4,4) + repmat([0,0,-d/6,d/6],4,1) + repmat(xy(:,1),1,4))*lambda0;
+ypos = (zeros(4,4) + repmat([-d/6,d/6,0,0],4,1) + repmat(xy(:,2),1,4))*lambda0;
+zpos = zeros(4,4);
 
 
 % MP_tol = 1e-3
@@ -165,7 +165,7 @@ for i=1:Sn
     rho(:,:,i) = r(:,:,i) - repmat(R(:,i),1,Zn);
 end
 
-
+foo = 1;
 
 
 k=@(th,ph) [cos(th).*sin(ph); sin(th).*sin(ph); cos(ph)];

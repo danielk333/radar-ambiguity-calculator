@@ -10,6 +10,9 @@ Contents:
 
 .. toctree::
    :maxdepth: 2
+   :caption: Contents:
+	
+   radar
 
 
 
@@ -19,4 +22,3 @@ Indices and tables
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
-
