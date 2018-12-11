@@ -1,0 +1,227 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Example of utilization and expected outputs. &#8212; Radar Ambiguity Calculator (RAC) 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="Tested radar configurations" href="radarconf.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="radarconf.html" title="Tested radar configurations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="example-of-utilization-and-expected-outputs">
+<h1>Example of utilization and expected outputs.<a class="headerlink" href="#example-of-utilization-and-expected-outputs" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="solve-the-problem-for-a-certain-radar-configuration">
+<h2>Solve the problem for a certain radar configuration<a class="headerlink" href="#solve-the-problem-for-a-certain-radar-configuration" title="Permalink to this headline">¶</a></h2>
+<p>As an example take one of the radar configurations, <strong>JONES</strong> in this case, with a frequency of 31 MHz.</p>
+<p>The coordinates of the subarray in wave lengths are</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="50%" />
+<col width="50%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">x</th>
+<th class="head">y</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>2</td>
+</tr>
+<tr class="row-odd"><td>0</td>
+<td>-2.5</td>
+</tr>
+<tr class="row-even"><td>-2</td>
+<td>0</td>
+</tr>
+<tr class="row-odd"><td>2.5</td>
+<td>0</td>
+</tr>
+<tr class="row-even"><td>0</td>
+<td>0</td>
+</tr>
+</tbody>
+</table>
+<p>By running a python script with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">functions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">radarconf</span> <span class="k">import</span> <span class="n">radar_conf</span>
+<span class="kn">from</span> <span class="nn">ambiguity_calculator</span> <span class="k">import</span> <span class="n">ambiguities_calculate</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">,</span> <span class="n">strftime</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+
+<span class="n">ambiguities_calculate</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="s1">&#39;JONES&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>a HDF5 called JONES.h5 containing the calculation results is generated in the folder ../processed_data/JONES.</p>
+<p>JONES.h5 contains several items, data sets. Organized between two main HDF5 groups.</p>
+<ul>
+<li><p class="first">root:</p>
+<blockquote>
+<div><ul>
+<li><p class="first">trivial_calculations: holds results from calculations which are straight forward and whose results can be used for to track the results.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>sensor_groups</em></li>
+<li><em>subgroup_phase_center</em></li>
+<li><em>linear_coefficients</em></li>
+<li><em>base_numbers</em></li>
+<li><em>k_length</em></li>
+</ul>
+</div></blockquote>
+</li>
+<li><p class="first">results_permutations: holds the results of the permutations and ambiguities.</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>intersections_integers_complete</em></li>
+<li><em>ambiguity_distances_INT_FORM_MAT</em></li>
+<li><em>ambiguity_distances_INT_FORM_mean</em></li>
+<li><em>ambiguity_distances_WAVE_FORM_MAT</em></li>
+<li><em>ambiguity_distances_WAVE_FORM</em></li>
+<li><em>intersection_line</em></li>
+<li><em>survivors</em></li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div></blockquote>
+</li>
+</ul>
+</div>
+<div class="section" id="use-the-results-to-see-the-ambiguities-for-a-doa">
+<h2>Use the results to see the ambiguities for a DOA.<a class="headerlink" href="#use-the-results-to-see-the-ambiguities-for-a-doa" title="Permalink to this headline">¶</a></h2>
+<p>Continuing with JONES radar configuration, if one runs another script with</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">functions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">radarconf</span> <span class="k">import</span> <span class="n">radar_conf</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="k">import</span> <span class="n">Axes3D</span>
+<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="k">import</span> <span class="n">MaxNLocator</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">rc</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
+
+<span class="n">generate_plots</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="s1">&#39;JONES&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">31</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="mi">270</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>the same HDF5 file will the imported and plots with the results will be generated.</p>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure1.png"><img alt="_images/figure1.png" src="_images/figure1.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure2.png"><img alt="_images/figure2.png" src="_images/figure2.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure3.png"><img alt="_images/figure3.png" src="_images/figure3.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure4.png"><img alt="_images/figure4.png" src="_images/figure4.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure6.png"><img alt="_images/figure6.png" src="_images/figure6.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+<div class="figure align-center">
+<a class="reference internal image-reference" href="_images/figure7.png"><img alt="_images/figure7.png" src="_images/figure7.png" style="width: 368.8px; height: 276.8px;" /></a>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Example of utilization and expected outputs.</a><ul>
+<li><a class="reference internal" href="#solve-the-problem-for-a-certain-radar-configuration">Solve the problem for a certain radar configuration</a></li>
+<li><a class="reference internal" href="#use-the-results-to-see-the-ambiguities-for-a-doa">Use the results to see the ambiguities for a DOA.</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="radarconf.html"
+                        title="previous chapter">Tested radar configurations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/test_example.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="radarconf.html" title="Tested radar configurations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Daniel Kastinen (daniel.kastinen@irf.se) &amp; Felipe Betancourt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

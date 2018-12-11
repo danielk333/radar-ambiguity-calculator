@@ -1,0 +1,295 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ambiguity_calculator &#8212; Radar Ambiguity Calculator (RAC) 0.1 documentation</title>
+    <link rel="stylesheet" href="../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../_static/jquery.js"></script>
+    <script type="text/javascript" src="../_static/underscore.js"></script>
+    <script type="text/javascript" src="../_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" accesskey="U">Module code</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <h1>Source code for ambiguity_calculator</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">functions</span> <span class="k">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">radarconf</span> <span class="k">import</span> <span class="n">radar_conf</span>
+<span class="kn">import</span> <span class="nn">itertools</span>
+<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">,</span> <span class="n">strftime</span>
+<span class="kn">import</span> <span class="nn">h5py</span>
+
+
+<div class="viewcode-block" id="ambiguities_calculate"><a class="viewcode-back" href="../radar.html#ambiguity_calculator.ambiguities_calculate">[docs]</a><span class="k">def</span> <span class="nf">ambiguities_calculate</span><span class="p">(</span><span class="n">radar_name</span><span class="p">,</span> <span class="n">frequency</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates the solution for the radar ambiguity problem by implementing developed by Daniel Kastinen in his paper</span>
+<span class="sd">    &quot;Determining all ambiguities in direction of arrival measured by radar systems&quot;. The output of the calculations is</span>
+<span class="sd">    summarized in a .h5 file with HDF5 format and saved into the /processed_data folder. Also a .log file is generated</span>
+<span class="sd">    with a summary of the calculation process.</span>
+
+<span class="sd">    :param radar_name: Name of the radar to be studied out of a list of defined configurations.</span>
+<span class="sd">    :param frequency: Operating frequency [MHz]</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Start timer</span>
+    <span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">()</span>
+
+    <span class="c1"># Define radar configuration</span>
+    <span class="n">lambda0</span><span class="p">,</span> <span class="n">xycoords</span> <span class="o">=</span> <span class="n">radar_conf</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="n">radar_name</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="n">frequency</span><span class="p">)</span>
+
+    <span class="c1"># Create /processed_data folder if it doesn&#39;t exist. Here results of calculation will be stored together with</span>
+    <span class="c1"># .log file.</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="s1">&#39;../processed_data/&#39;</span><span class="o">+</span><span class="n">radar_name</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="s1">&#39;../processed_data/&#39;</span><span class="o">+</span><span class="n">radar_name</span><span class="p">)</span>
+
+    <span class="c1"># generate and write .log file</span>
+    <span class="n">log</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;../processed_data/&#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39;.log&#39;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">newline</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;Solution for &#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39; radar configuration is calculated. </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;.................................................... </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;frequency (f) = &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">frequency</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;MHz </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;array positions: &#39;</span> <span class="o">+</span> <span class="s1">&#39;</span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Number os sensor groups. Don&#39;t count on the last sensor group since it points at the origin of the radar</span>
+    <span class="c1"># configuration.</span>
+    <span class="n">Sn</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">xycoords</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+    <span class="c1">## Calcualte subgroup phase center</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">R_cal</span><span class="p">(</span><span class="n">sensor_groups</span><span class="o">=</span><span class="n">Sn</span><span class="p">,</span> <span class="n">xycoords</span><span class="o">=</span><span class="n">xycoords</span><span class="p">)</span>
+
+    <span class="c1"># Calculate linear coefficients</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="n">linCoeff_cal</span><span class="p">(</span><span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+
+    <span class="c1"># Calculate base numbers</span>
+    <span class="n">n0</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">2</span> <span class="o">*</span> <span class="n">K</span><span class="p">)</span>
+
+    <span class="c1"># K&#39;s from 1 to no + 1</span>
+    <span class="n">k_length</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">n0</span> <span class="o">+</span> <span class="mi">1</span>
+
+    <span class="c1"># Create all possible permutations from 3 first sets of planes</span>
+    <span class="n">PERMS_number</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">prod</span><span class="p">(</span><span class="n">k_length</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span>
+
+    <span class="n">iterables3</span> <span class="o">=</span> <span class="p">[</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">k_length</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">k_length</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">k_length</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="o">+</span><span class="mi">1</span><span class="p">)]</span>
+    <span class="n">PERMS_J</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">itertools</span><span class="o">.</span><span class="n">product</span><span class="p">(</span><span class="o">*</span><span class="n">iterables3</span><span class="p">))</span>  <span class="c1"># list of tuples, each tuples containing 3 int.</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;First intersection calculation: </span><span class="si">%1d</span><span class="s1"> permutations of 3 planes </span><span class="se">\n</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="n">PERMS_number</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39; : Started &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">)</span>
+              <span class="o">+</span> <span class="s1">&#39; permutations of 3 planes. </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># 3 first sets of planes</span>
+    <span class="n">I</span> <span class="o">=</span> <span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">])</span>
+
+    <span class="n">W_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">R</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span><span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">R</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+    <span class="c1"># initialize variable to store the distance to the real b_vector to the moore_penrose solution.</span>
+    <span class="n">pinv_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">int</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+
+    <span class="c1"># initialize variable to store the lines of intersections.</span>
+    <span class="n">intersection_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="nb">int</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">)))</span>
+
+    <span class="c1"># Start looping over first three combinations</span>
+
+    <span class="k">for</span> <span class="n">aux</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PERMS_J</span><span class="p">):</span>
+
+        <span class="n">b_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="mi">1</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">I</span><span class="p">:</span>
+            <span class="n">b_vector</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">nvec_j</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">R</span><span class="p">),</span> <span class="n">p0_jk</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">R</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+
+        <span class="n">intersection_line</span><span class="p">[:,</span> <span class="n">aux</span><span class="p">],</span> <span class="n">pinv_norm</span><span class="p">[</span><span class="n">aux</span><span class="p">]</span> <span class="o">=</span> <span class="n">mooore_penrose_solution</span><span class="p">(</span><span class="n">W</span><span class="o">=</span><span class="n">W_matrix</span><span class="p">,</span>
+                                                                            <span class="n">b</span><span class="o">=</span><span class="n">b_vector</span><span class="p">)</span>
+
+    <span class="c1"># Choose out from all possible combinations the one that are valid</span>
+    <span class="n">intersection_line_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">([</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">intersection_line</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)]))</span>
+
+    <span class="n">intersections</span> <span class="o">=</span> <span class="n">intersections_cal</span><span class="p">(</span><span class="n">pinv_norm</span><span class="o">=</span><span class="n">pinv_norm</span><span class="p">,</span>
+                                      <span class="n">PERMS_J</span><span class="o">=</span><span class="n">PERMS_J</span><span class="p">,</span>
+                                      <span class="n">intersection_line</span><span class="o">=</span><span class="n">intersection_line</span><span class="p">,</span>
+                                      <span class="n">R</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="n">intersection_line_norm</span><span class="p">)</span>
+
+    <span class="n">SURVIVORS</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">Sn</span> <span class="o">-</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+    <span class="n">SURVIVORS</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39; : Finished &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">)</span>
+              <span class="o">+</span> <span class="s1">&#39; permutations of 3 planes. </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;                      There were &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; survivors </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done with first three permutations&#39;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">ii</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">Sn</span><span class="p">):</span>
+
+        <span class="n">PERMS_J_base</span> <span class="o">=</span> <span class="n">PERMS_J</span>
+
+        <span class="c1"># Create all possible permutations from ii first sets of planes with only the surviving set + all new and</span>
+        <span class="c1"># recursively iterate</span>
+
+        <span class="c1"># PERMS_number = int(intersections_n * k_length[ii])</span>
+        <span class="n">PERMS_number</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">k_length</span><span class="p">[</span><span class="n">ii</span><span class="p">])</span>
+
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;Starting plane intersections for new sensor </span><span class="si">%1d</span><span class="s1"> of </span><span class="si">%1d</span><span class="s1"> with </span><span class="si">%1d</span><span class="s1"> permutations on </span><span class="si">%1d</span><span class="s1"> remaining solutions </span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">Sn</span><span class="p">,</span> <span class="n">PERMS_number</span><span class="p">,</span> <span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]))</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span>
+                  <span class="o">+</span> <span class="s1">&#39; : Starting plane intersections for new sensor &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                  <span class="o">+</span> <span class="s1">&#39; of &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Sn</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; with &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; permutations on &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+                  <span class="o">+</span> <span class="s1">&#39; remaining solutions </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+        <span class="n">PERMS_J</span> <span class="o">=</span> <span class="n">permutations_create</span><span class="p">(</span><span class="n">permutations_base</span><span class="o">=</span><span class="n">PERMS_J_base</span><span class="p">,</span>
+                                      <span class="n">intersections_ind</span><span class="o">=</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;indexes&#39;</span><span class="p">],</span>
+                                      <span class="n">k_length</span><span class="o">=</span><span class="n">k_length</span><span class="p">,</span>
+                                      <span class="n">permutation_index</span><span class="o">=</span><span class="n">ii</span><span class="p">)</span>
+
+        <span class="n">I</span> <span class="o">=</span> <span class="nb">range</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+
+        <span class="n">W_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="n">R</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">tile</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="n">R</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">:</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)))</span>
+
+        <span class="n">pinv_norm</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">PERMS_number</span><span class="p">,</span> <span class="mi">1</span><span class="p">))</span>
+        <span class="n">intersection_line</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="n">PERMS_number</span><span class="p">))</span>
+
+        <span class="n">PERMS_J_prime</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">b_vector</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="nb">len</span><span class="p">(</span><span class="n">I</span><span class="p">),</span> <span class="n">PERMS_number</span><span class="p">))</span>
+
+        <span class="k">for</span> <span class="n">aux</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">PERMS_J</span><span class="p">):</span>
+            <span class="n">PERMS_J_prime</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">])))</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">I</span><span class="p">:</span>
+                <span class="n">b_vector</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">aux</span><span class="p">]</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">dot</span><span class="p">(</span><span class="n">nvec_j</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">R</span><span class="p">),</span> <span class="n">p0_jk</span><span class="p">(</span><span class="n">I</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">np</span><span class="o">.</span><span class="n">hstack</span><span class="p">((</span><span class="n">j</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">j</span><span class="p">[</span><span class="mi">1</span><span class="p">]))[</span><span class="n">i</span><span class="p">],</span> <span class="n">R</span><span class="p">,</span> <span class="n">n0</span><span class="p">,</span> <span class="n">K</span><span class="p">))</span>
+
+        <span class="n">mooore_penrose_solution_par</span><span class="p">(</span><span class="n">W</span><span class="o">=</span><span class="n">W_matrix</span><span class="p">,</span>
+                                    <span class="n">b_set</span><span class="o">=</span><span class="n">b_vector</span><span class="p">,</span>
+                                    <span class="n">pnum</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                                    <span class="n">niter</span><span class="o">=</span><span class="n">PERMS_number</span><span class="p">,</span>
+                                    <span class="n">intersection_line_set</span><span class="o">=</span><span class="n">intersection_line</span><span class="p">,</span>
+                                    <span class="n">pinv_norm_set</span><span class="o">=</span><span class="n">pinv_norm</span><span class="p">)</span>
+
+        <span class="n">PERMS_J</span> <span class="o">=</span> <span class="n">PERMS_J_prime</span>
+
+        <span class="n">intersections</span> <span class="o">=</span> <span class="n">intersections_cal</span><span class="p">(</span><span class="n">pinv_norm</span><span class="p">,</span> <span class="n">PERMS_J</span><span class="p">,</span> <span class="n">intersection_line</span><span class="p">,</span> <span class="n">R</span><span class="p">)</span>
+
+        <span class="n">SURVIVORS</span><span class="p">[</span><span class="n">ii</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span>
+
+        <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span>
+                  <span class="o">+</span> <span class="s1">&#39; : Finished plane intersections for new sensor &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">ii</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+                  <span class="o">+</span> <span class="s1">&#39; of &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">Sn</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; with &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">PERMS_number</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39; permutations on &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+                  <span class="o">+</span> <span class="s1">&#39; remaining solutions </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">ii</span><span class="o">+</span><span class="mi">1</span> <span class="o">==</span> <span class="n">Sn</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;                      There were &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span> <span class="o">+</span> <span class="s1">&#39; survivors </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;                      At the end there are &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">])</span>
+                      <span class="o">+</span> <span class="s1">&#39; brave survivors </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">intersections_last</span> <span class="o">=</span> <span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;number&#39;</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Last number of valid intersections &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">intersections_last</span><span class="p">))</span>
+
+    <span class="n">intersections_integers_complete</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+        <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">shape</span><span class="p">(</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;integers&#39;</span><span class="p">])[</span><span class="mi">1</span><span class="p">])),</span> <span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;integers&#39;</span><span class="p">]))</span>
+
+    <span class="c1"># Calculate ambiguity distances and organize into a dictionary</span>
+    <span class="n">AmbiguityDistances</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;int_form_mat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">intersections_integers_complete</span>
+                                                <span class="o">-</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">intersections_integers_complete</span><span class="p">))</span>
+    <span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;int_form_mean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;int_form_mat&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form_mat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">intersections_integers_complete</span><span class="p">)</span> <span class="o">-</span> \
+                                          <span class="n">np</span><span class="o">.</span><span class="n">exp</span><span class="p">(</span><span class="mi">1</span><span class="n">j</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">pi</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">intersections_integers_complete</span><span class="p">))</span>
+    <span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span>
+        <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form_mat&#39;</span><span class="p">]</span> <span class="o">*</span> <span class="n">np</span><span class="o">.</span><span class="n">conjugate</span><span class="p">(</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form_mat&#39;</span><span class="p">]),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">))</span><span class="o">.</span><span class="n">real</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span> <span class="o">+</span> <span class="s1">&#39; : Time elapsed for main calculations was &#39;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">)</span>
+              <span class="o">+</span> <span class="s1">&#39; seconds </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Save results</span>
+    <span class="k">with</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="s1">&#39;../processed_data/&#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39;/&#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39;.h5&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">hdf</span><span class="p">:</span>
+
+        <span class="n">G1</span> <span class="o">=</span> <span class="n">hdf</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;trivial_calculations&#39;</span><span class="p">)</span>
+        <span class="n">G1</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;sensor_groups&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">Sn</span><span class="p">)</span>
+        <span class="n">G1</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;subgroup_phase_center&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">R</span><span class="p">)</span>
+        <span class="n">G1</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;linear_coefficients&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">K</span><span class="p">)</span>
+        <span class="n">G1</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;base_numbers&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">n0</span><span class="p">)</span>
+        <span class="n">G1</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;k_length&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">k_length</span><span class="p">)</span>
+
+        <span class="n">G2</span> <span class="o">=</span> <span class="n">hdf</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s1">&#39;results_permutations&#39;</span><span class="p">)</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;intersections_integers_complete&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">intersections_integers_complete</span><span class="p">)</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ambiguity_distances_INT_FORM_MAT&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;int_form_mat&#39;</span><span class="p">])</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ambiguity_distances_INT_FORM_mean&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;int_form_mean&#39;</span><span class="p">])</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ambiguity_distances_WAVE_FORM_MAT&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form_mat&#39;</span><span class="p">])</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;ambiguity_distances_WAVE_FORM&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">AmbiguityDistances</span><span class="p">[</span><span class="s1">&#39;wave_form&#39;</span><span class="p">])</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;intersection_line&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">intersection_line</span><span class="p">)</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;intersection_indexes&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">intersections</span><span class="p">[</span><span class="s1">&#39;indexes&#39;</span><span class="p">])</span>
+        <span class="n">G2</span><span class="o">.</span><span class="n">create_dataset</span><span class="p">(</span><span class="s1">&#39;survivors&#39;</span><span class="p">,</span> <span class="n">data</span><span class="o">=</span><span class="n">SURVIVORS</span><span class="p">)</span>
+
+    <span class="n">log</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y-%m-</span><span class="si">%d</span><span class="s2"> %H:%M:%S&quot;</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">())</span>
+              <span class="o">+</span> <span class="s1">&#39; : Results exported to /processed_data/&#39;</span> <span class="o">+</span> <span class="n">radar_name</span> <span class="o">+</span> <span class="s1">&#39;.h5 </span><span class="se">\r\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="c1"># Finish logging.</span>
+    <span class="n">log</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">time</span><span class="p">()</span><span class="o">-</span><span class="n">t</span><span class="p">)</span></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="nav-item nav-item-0"><a href="../index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li>
+          <li class="nav-item nav-item-1"><a href="index.html" >Module code</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Daniel Kastinen (daniel.kastinen@irf.se) &amp; Felipe Betancourt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,12 @@
+\select@language {english}
+\contentsline {chapter}{\numberline {1}Introduction}{1}{chapter.1}
+\contentsline {chapter}{\numberline {2}Tool for radar ambiguity solution}{3}{chapter.2}
+\contentsline {chapter}{\numberline {3}Tool for generating plots}{5}{chapter.3}
+\contentsline {chapter}{\numberline {4}List of functions used during the calculations}{7}{chapter.4}
+\contentsline {chapter}{\numberline {5}Tested radar configurations}{11}{chapter.5}
+\contentsline {chapter}{\numberline {6}Example of utilization and expected outputs.}{13}{chapter.6}
+\contentsline {section}{\numberline {6.1}Solve the problem for a certain radar configuration}{13}{section.6.1}
+\contentsline {section}{\numberline {6.2}Use the results to see the ambiguities for a DOA.}{14}{section.6.2}
+\contentsline {chapter}{\numberline {7}Indices and tables}{19}{chapter.7}
+\contentsline {chapter}{Python Module Index}{21}{section*.20}
+\contentsline {chapter}{Index}{23}{section*.21}

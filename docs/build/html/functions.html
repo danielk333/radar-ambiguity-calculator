@@ -1,0 +1,382 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>List of functions used during the calculations &#8212; Radar Ambiguity Calculator (RAC) 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Tested radar configurations" href="radarconf.html" />
+    <link rel="prev" title="Tool for generating plots" href="plots_generator.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="radarconf.html" title="Tested radar configurations"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="plots_generator.html" title="Tool for generating plots"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="module-functions">
+<span id="list-of-functions-used-during-the-calculations"></span><h1>List of functions used during the calculations<a class="headerlink" href="#module-functions" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="functions.R_cal">
+<code class="descclassname">functions.</code><code class="descname">R_cal</code><span class="sig-paren">(</span><em>sensor_groups</em>, <em>xycoords</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#R_cal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.R_cal" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>sensor_groups</strong> – how many sensor groups are there in the radar configuration. Do not count on the one located     at the origin</li>
+<li><strong>xycoords</strong> – coordinates of the subgroups centers in wave lengths</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return R:</th><td class="field-body"><p class="first last">subgroup phase center</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.explicit">
+<code class="descclassname">functions.</code><code class="descname">explicit</code><span class="sig-paren">(</span><em>intersection_line</em>, <em>intersections_ind</em>, <em>cap_intersections_of_slines</em>, <em>xy</em>, <em>k0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#explicit"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.explicit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculation of ambiguities</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>intersection_line</strong> – matrix of intersection lines as columns</li>
+<li><strong>intersections_ind</strong> – valid intersection indexes</li>
+<li><strong>cap_intersections_of_slines</strong> – cap?</li>
+<li><strong>xy</strong> – xy coordinates of radar subgroups</li>
+<li><strong>k0</strong> – signal wave vector</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return ambiguity_distances_explicit:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first">ambiguity distances</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Return ambiguity_normal_explicit:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"></td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return k_finds:</th><td class="field-body"></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.intersections_cal">
+<code class="descclassname">functions.</code><code class="descname">intersections_cal</code><span class="sig-paren">(</span><em>pinv_norm</em>, <em>PERMS_J</em>, <em>intersection_line</em>, <em>R</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#intersections_cal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.intersections_cal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given that the Moore-Penrose solution gives a solution for any case. It is necessary to choose the ones whose     error is below a given tolerance value.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>pinv_norm</strong> – distance from real b_vector and the one obtained by the moore_penrose solution</li>
+<li><strong>PERMS_J</strong> – Valid combinations</li>
+<li><strong>intersection_line</strong> – matrix of intersection lines</li>
+<li><strong>R</strong> – subgroup phase center</li>
+<li><strong>kwargs</strong> – if ‘norm’ an extra condition will be applied and is that if pinv_norm is greater than zero, it     will disregarded.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return intersections:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first last">dictionary with the so far valid intersection combinations.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.k0_cal">
+<code class="descclassname">functions.</code><code class="descname">k0_cal</code><span class="sig-paren">(</span><em>el0</em>, <em>az0</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#k0_cal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.k0_cal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculation of wave vector defined defined in paper.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>el0</strong> – elevation angle [º]</li>
+<li><strong>az0</strong> – azimuth angle [º]</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.lambda_cal">
+<code class="descclassname">functions.</code><code class="descname">lambda_cal</code><span class="sig-paren">(</span><em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#lambda_cal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.lambda_cal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the wave length of electromagnetic radiation given its frequency.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>frequency</strong> – Frequency of electromagnetic radiation [MHz]</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return wavelength:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body">wave length of electromagnetic radiation [m]</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.linCoeff_cal">
+<code class="descclassname">functions.</code><code class="descname">linCoeff_cal</code><span class="sig-paren">(</span><em>R</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#linCoeff_cal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.linCoeff_cal" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate linear coefficients given R.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>R</strong> – matrix of subgroup phase centers</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.mooore_penrose_solution">
+<code class="descclassname">functions.</code><code class="descname">mooore_penrose_solution</code><span class="sig-paren">(</span><em>W</em>, <em>b</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#mooore_penrose_solution"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.mooore_penrose_solution" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the difference that produces the use of the Moore-Penrose solution matrix to the algebraic equation</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>W</strong> – W matrix as described in paper</li>
+<li><strong>b</strong> – b vector as described in paper</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Return intersection_line:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><p class="first">matrix of intersection lines</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Return pinv_norm:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><p class="first last">difference after solution check</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.mooore_penrose_solution_par">
+<code class="descclassname">functions.</code><code class="descname">mooore_penrose_solution_par</code><span class="sig-paren">(</span><em>W</em>, <em>b_set</em>, <em>pnum</em>, <em>niter</em>, <em>intersection_line_set</em>, <em>pinv_norm_set</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#mooore_penrose_solution_par"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.mooore_penrose_solution_par" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the Moore-Penrose solution for each case making use of parallel threading to parallelize task
+and joining results. Calls the function moore_penrose_solution_ptr</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>W</strong> – Matrix representation of all the normal vector of the planes going through the intersection.</li>
+<li><strong>b_set</strong> – Set ob b vectors for which the solution is going to be computed.</li>
+<li><strong>pnum</strong> – Number of cores for parallelizing</li>
+<li><strong>niter</strong> – number of permutations.</li>
+<li><strong>intersection_line_set</strong> – initial array with zeros where the intersection lines will be allocated.</li>
+<li><strong>pinv_norm_set</strong> – error in the MP solution approximation</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.mooore_penrose_solution_ptr">
+<code class="descclassname">functions.</code><code class="descname">mooore_penrose_solution_ptr</code><span class="sig-paren">(</span><em>W</em>, <em>Wpinv</em>, <em>b_set</em>, <em>intersection_line_set</em>, <em>pinv_norm_set</em>, <em>ind_range</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#mooore_penrose_solution_ptr"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.mooore_penrose_solution_ptr" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the difference tha produces the use of the Moore-Penrose solution matrix to the algebraic equation in     paper.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>W</strong> – W matrix</li>
+<li><strong>Wpinv</strong> – Pseudo-inverser of W matrix</li>
+<li><strong>b_set</strong> – set of b vctors</li>
+<li><strong>intersection_line_set</strong> – matrix of intersection lines</li>
+<li><strong>pinv_norm_set</strong> – matrix of pinv_norm vectors</li>
+<li><strong>ind_range</strong> – index</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.nvec_j">
+<code class="descclassname">functions.</code><code class="descname">nvec_j</code><span class="sig-paren">(</span><em>j</em>, <em>R</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#nvec_j"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.nvec_j" title="Permalink to this definition">¶</a></dt>
+<dd><p>Normalized vector normal to plane j. Each plane is given as a column in R.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>j</strong> – index</li>
+<li><strong>R</strong> – subgroup phase center</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.p0_jk">
+<code class="descclassname">functions.</code><code class="descname">p0_jk</code><span class="sig-paren">(</span><em>j</em>, <em>k</em>, <em>R</em>, <em>n0</em>, <em>K</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#p0_jk"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.p0_jk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Displacement point</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>j</strong> – </li>
+<li><strong>k</strong> – </li>
+<li><strong>R</strong> – </li>
+<li><strong>n0</strong> – </li>
+<li><strong>K</strong> – </li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.permutations_create">
+<code class="descclassname">functions.</code><code class="descname">permutations_create</code><span class="sig-paren">(</span><em>permutations_base</em>, <em>intersections_ind</em>, <em>k_length</em>, <em>permutation_index</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#permutations_create"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.permutations_create" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create all possible permutations by combining current permutation combinations with valid indexes and new</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>permutations_base</strong> – set of combinations created so far</li>
+<li><strong>intersections_ind</strong> – indexes of valid combinations</li>
+<li><strong>k_length</strong> – set of elements to create new permutations, k</li>
+<li><strong>permutation_index</strong> – index of current permutation. Chooses k_j</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="functions.slines_intersections">
+<code class="descclassname">functions.</code><code class="descname">slines_intersections</code><span class="sig-paren">(</span><em>k0</em>, <em>intersections_ind</em>, <em>intersection_line</em>, <em>cutoff_ph_ang</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/functions.html#slines_intersections"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#functions.slines_intersections" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find all s-lines that intersect with the cap by range check.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>k0</strong> – wave vector</li>
+<li><strong>intersections_ind</strong> – indexes of valid combinations</li>
+<li><strong>intersection_line</strong> – intersection lines matrix</li>
+<li><strong>cutoff_ph_ang</strong> – cut-off angle</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="plots_generator.html"
+                        title="previous chapter">Tool for generating plots</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="radarconf.html"
+                        title="next chapter">Tested radar configurations</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/functions.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="radarconf.html" title="Tested radar configurations"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="plots_generator.html" title="Tool for generating plots"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Daniel Kastinen (daniel.kastinen@irf.se) &amp; Felipe Betancourt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>

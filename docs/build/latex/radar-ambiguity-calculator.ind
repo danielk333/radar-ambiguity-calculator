@@ -1,0 +1,59 @@
+\begin{sphinxtheindex}
+\def\bigletter#1{{\Large\sffamily#1}\nopagebreak\vspace{1mm}}
+
+  \bigletter A
+  \item ambiguities\_calculate() (in module ambiguity\_calculator), \hyperpage{3}
+  \item ambiguity\_calculator (module), \hyperpage{3}
+
+  \indexspace
+  \bigletter E
+  \item explicit() (in module functions), \hyperpage{7}
+
+  \indexspace
+  \bigletter F
+  \item functions (module), \hyperpage{7}
+
+  \indexspace
+  \bigletter G
+  \item generate\_plots() (in module plots\_generator), \hyperpage{5}
+
+  \indexspace
+  \bigletter I
+  \item intersections\_cal() (in module functions), \hyperpage{7}
+
+  \indexspace
+  \bigletter K
+  \item k0\_cal() (in module functions), \hyperpage{8}
+
+  \indexspace
+  \bigletter L
+  \item lambda\_cal() (in module functions), \hyperpage{8}
+  \item linCoeff\_cal() (in module functions), \hyperpage{8}
+
+  \indexspace
+  \bigletter M
+  \item mooore\_penrose\_solution() (in module functions), \hyperpage{8}
+  \item mooore\_penrose\_solution\_par() (in module functions), \hyperpage{8}
+  \item mooore\_penrose\_solution\_ptr() (in module functions), \hyperpage{9}
+
+  \indexspace
+  \bigletter N
+  \item nvec\_j() (in module functions), \hyperpage{9}
+
+  \indexspace
+  \bigletter P
+  \item p0\_jk() (in module functions), \hyperpage{9}
+  \item permutations\_create() (in module functions), \hyperpage{9}
+  \item plots\_generator (module), \hyperpage{5}
+
+  \indexspace
+  \bigletter R
+  \item R\_cal() (in module functions), \hyperpage{7}
+  \item radar\_conf() (in module radarconf), \hyperpage{11}
+  \item radarconf (module), \hyperpage{11}
+
+  \indexspace
+  \bigletter S
+  \item slines\_intersections() (in module functions), \hyperpage{10}
+
+\end{sphinxtheindex}

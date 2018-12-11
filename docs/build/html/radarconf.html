@@ -1,0 +1,134 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Tested radar configurations &#8212; Radar Ambiguity Calculator (RAC) 0.1 documentation</title>
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="Example of utilization and expected outputs." href="test_example.html" />
+    <link rel="prev" title="List of functions used during the calculations" href="functions.html" /> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_example.html" title="Example of utilization and expected outputs."
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="functions.html" title="List of functions used during the calculations"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tested-radar-configurations">
+<h1>Tested radar configurations<a class="headerlink" href="#tested-radar-configurations" title="Permalink to this headline">¶</a></h1>
+<p>The user can test the algorithms with these radar configurations.</p>
+<span class="target" id="module-radarconf"></span><dl class="function">
+<dt id="radarconf.radar_conf">
+<code class="descclassname">radarconf.</code><code class="descname">radar_conf</code><span class="sig-paren">(</span><em>radar_name</em>, <em>frequency</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/radarconf.html#radar_conf"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#radarconf.radar_conf" title="Permalink to this definition">¶</a></dt>
+<dd><p>Select radar radar configuration after name.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>radar_name</strong> – input by user</li>
+<li><strong>frequency</strong> – frequency at which the radar array is being operated [Mhz]</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Return lambda0:</th><td class="field-body"><p class="first">wave lenght corresponding to radar frequency [m]</p>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name" colspan="2">Return xycoords:</th></tr>
+<tr class="field-odd field"><td>&#160;</td><td class="field-body"><p class="first last">coordinates of subarray centers w.r.t. center of radar configuration in wavelengths.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="functions.html"
+                        title="previous chapter">List of functions used during the calculations</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="test_example.html"
+                        title="next chapter">Example of utilization and expected outputs.</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/radarconf.rst.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="test_example.html" title="Example of utilization and expected outputs."
+             >next</a> |</li>
+        <li class="right" >
+          <a href="functions.html" title="List of functions used during the calculations"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">Radar Ambiguity Calculator (RAC) 0.1 documentation</a> &#187;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &#169; Copyright 2018, Daniel Kastinen (daniel.kastinen@irf.se) &amp; Felipe Betancourt.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.9.
+    </div>
+  </body>
+</html>
