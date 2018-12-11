@@ -1,0 +1,9 @@
+Solution for Ydist radar configuration is calculated. 
+.................................................... 
+frequency (f) = 31MHz 
+array positions: 
+2018-12-11 13:15:34 : Started 2197.0 permutations of 3 planes. 
+2018-12-11 13:15:35 : Finished 2197.0 permutations of 3 planes. 
+                      There were 64 survivors 
+2018-12-11 13:15:35 : Time elapsed for main calculations was 0.770395040512085 seconds 
+2018-12-11 13:15:35 : Results exported to /processed_data/Ydist.h5 

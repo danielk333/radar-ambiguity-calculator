@@ -1,0 +1,12 @@
+Solution for JONES radar configuration is calculated. 
+.................................................... 
+frequency (f) = 31MHz 
+array positions: 
+2018-12-11 13:14:02 : Started 891.0 permutations of 3 planes. 
+2018-12-11 13:14:02 : Finished 891.0 permutations of 3 planes. 
+                      There were 34 survivors 
+2018-12-11 13:14:02 : Starting plane intersections for new sensor 4 of 4 with 374 permutations on 34 remaining solutions 
+2018-12-11 13:14:02 : Finished plane intersections for new sensor 4 of 4 with 374 permutations on 16 remaining solutions 
+                      At the end there are 16 brave survivors 
+2018-12-11 13:14:02 : Time elapsed for main calculations was 0.47841739654541016 seconds 
+2018-12-11 13:14:02 : Results exported to /processed_data/JONES.h5 

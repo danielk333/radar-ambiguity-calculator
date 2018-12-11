@@ -1,0 +1,24 @@
+Solution for symmetric1 radar configuration is calculated. 
+.................................................... 
+frequency (f) = 31MHz 
+array positions: 
+2018-12-11 13:14:39 : Started 2197.0 permutations of 3 planes. 
+2018-12-11 13:14:40 : Finished 2197.0 permutations of 3 planes. 
+                      There were 112 survivors 
+2018-12-11 13:14:40 : Starting plane intersections for new sensor 4 of 8 with 1456 permutations on 112 remaining solutions 
+2018-12-11 13:14:40 : Finished plane intersections for new sensor 4 of 8 with 1456 permutations on 112 remaining solutions 
+                      There were 112 survivors 
+2018-12-11 13:14:40 : Starting plane intersections for new sensor 5 of 8 with 1456 permutations on 112 remaining solutions 
+2018-12-11 13:14:41 : Finished plane intersections for new sensor 5 of 8 with 1456 permutations on 82 remaining solutions 
+                      There were 82 survivors 
+2018-12-11 13:14:41 : Starting plane intersections for new sensor 6 of 8 with 1066 permutations on 82 remaining solutions 
+2018-12-11 13:14:41 : Finished plane intersections for new sensor 6 of 8 with 1066 permutations on 56 remaining solutions 
+                      There were 56 survivors 
+2018-12-11 13:14:41 : Starting plane intersections for new sensor 7 of 8 with 728 permutations on 56 remaining solutions 
+2018-12-11 13:14:42 : Finished plane intersections for new sensor 7 of 8 with 728 permutations on 46 remaining solutions 
+                      There were 46 survivors 
+2018-12-11 13:14:42 : Starting plane intersections for new sensor 8 of 8 with 598 permutations on 46 remaining solutions 
+2018-12-11 13:14:42 : Finished plane intersections for new sensor 8 of 8 with 598 permutations on 40 remaining solutions 
+                      At the end there are 40 brave survivors 
+2018-12-11 13:14:42 : Time elapsed for main calculations was 3.12007474899292 seconds 
+2018-12-11 13:14:42 : Results exported to /processed_data/symmetric1.h5 
