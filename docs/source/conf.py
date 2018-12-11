@@ -19,7 +19,7 @@ import os
 # If extensions (or modules to document with autodoc) are in another directory,
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
-#sys.path.insert(0, os.path.abspath('.'))
+sys.path.insert(0, os.path.abspath('../../source'))
 
 # -- General configuration ------------------------------------------------
 
@@ -29,16 +29,20 @@ import os
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = [
-    'sphinx.ext.autodoc',
-    'sphinx.ext.doctest',
-    'sphinx.ext.coverage',
-    'sphinx.ext.mathjax',
-    'sphinx.ext.viewcode',
-]
+
+extensions = ['sphinx.ext.autodoc',
+              'sphinx.ext.doctest',
+              'sphinx.ext.intersphinx',
+              'sphinx.ext.todo',
+              'sphinx.ext.coverage',
+              'sphinx.ext.mathjax',
+              'sphinx.ext.ifconfig',
+              'sphinx.ext.viewcode',
+              'sphinx.ext.githubpages',
+              'sphinx.ext.imgconverter']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+#templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -52,8 +56,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = 'radar-ambiguity-calculator'
-copyright = '2018, Daniel Kastinen & Felipe Betancourt'
+project = 'Radar Ambiguity Calculator (RAC)'
+copyright = '2018, Daniel Kastinen (daniel.kastinen@irf.se) & Felipe Betancourt'
 author = 'Daniel Kastinen & Felipe Betancourt'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -76,7 +80,7 @@ language = None
 # non-false value, then it is used:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -114,7 +118,7 @@ todo_include_todos = False
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-html_theme = 'alabaster'
+html_theme = 'nature'
 
 # Theme options are theme-specific and customize the look and feel of a theme
 # further.  For a list of options available for each theme, see the
@@ -178,10 +182,10 @@ html_static_path = ['_static']
 #html_show_sourcelink = True
 
 # If true, "Created using Sphinx" is shown in the HTML footer. Default is True.
-#html_show_sphinx = True
+html_show_sphinx = True
 
 # If true, "(C) Copyright ..." is shown in the HTML footer. Default is True.
-#html_show_copyright = True
+html_show_copyright = True
 
 # If true, an OpenSearch description file will be output, and all pages will
 # contain a <link> tag referring to it.  The value of this option must be the
@@ -215,7 +219,7 @@ latex_elements = {
 #'papersize': 'letterpaper',
 
 # The font size ('10pt', '11pt' or '12pt').
-#'pointsize': '10pt',
+'pointsize': '12pt',
 
 # Additional stuff for the LaTeX preamble.
 #'preamble': '',
@@ -272,7 +276,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-    (master_doc, 'radar-ambiguity-calculator', 'radar-ambiguity-calculator Documentation',
+    (master_doc, 'radar-ambiguity-calculator', 'Radar Ambiguity Calculator (RAC) Documentation',
      author, 'radar-ambiguity-calculator', 'One line description of project.',
      'Miscellaneous'),
 ]
