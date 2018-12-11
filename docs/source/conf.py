@@ -29,13 +29,6 @@ sys.path.insert(0, os.path.abspath('../../source'))
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-# extensions = [
-#     'sphinx.ext.autodoc',
-#     'sphinx.ext.doctest',
-#     'sphinx.ext.coverage',
-#     'sphinx.ext.mathjax',
-#     'sphinx.ext.viewcode',
-# ]
 
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.doctest',
@@ -49,7 +42,7 @@ extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.imgconverter']
 
 # Add any paths that contain templates here, relative to this directory.
-templates_path = ['_templates']
+#templates_path = ['_templates']
 
 # The suffix(es) of source filenames.
 # You can specify multiple suffix as a list of string:
@@ -64,7 +57,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = 'Radar Ambiguity Calculator (RAC)'
-copyright = '2018, Daniel Kastinen & Felipe Betancourt'
+copyright = '2018, Daniel Kastinen (daniel.kastinen@irf.se) & Felipe Betancourt'
 author = 'Daniel Kastinen & Felipe Betancourt'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -87,7 +80,7 @@ language = None
 # non-false value, then it is used:
 #today = ''
 # Else, today_fmt is used as the format for a strftime call.
-#today_fmt = '%B %d, %Y'
+today_fmt = '%B %d, %Y'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.

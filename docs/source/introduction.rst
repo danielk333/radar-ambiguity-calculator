@@ -17,3 +17,5 @@ signal wave (described as a wave vector). All of the use user defined functions 
 
 This algorithm will help scientist to account on radar ambiguities in applications where determining DOA is critical,
 like is the cse of interferometry, which is used to calculate precise meteoroid trajectories and orbits.
+
+Written and tested in Python 3.7.

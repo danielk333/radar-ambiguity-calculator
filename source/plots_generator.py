@@ -143,5 +143,3 @@ def generate_plots(radar_name, frequency, elevation, azimuth):
     fig6.savefig('../results/'+radar+'/figure6', format=format_save)
 
     plt.show()
-
-generate_plots(radar_name='JONES', frequency=31, elevation=50, azimuth=270)

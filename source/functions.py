@@ -21,7 +21,7 @@ def R_cal(sensor_groups, xycoords):
     """
     :param sensor_groups: how many sensor groups are there in the radar configuration. Do not count on the one located \
     at the origin
-    :param xycoords: locations of the subgroups [m]
+    :param xycoords: coordinates of the subgroups centers in wave lengths
     :return R: subgroup phase center
     """
 
@@ -251,7 +251,7 @@ def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, 
     """
     Calculation of ambiguities
 
-    :param intersection_line: matrix of intersection lines
+    :param intersection_line: matrix of intersection lines as columns
     :param intersections_ind: valid intersection indexes
     :param cap_intersections_of_slines: cap?
     :param xy: xy coordinates of radar subgroups
