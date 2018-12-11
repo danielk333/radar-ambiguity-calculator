@@ -22,17 +22,9 @@ By running a python script with
 
 ::
 
-    import os
-    import numpy as np
-    from functions import *
-    from radarconf import radar_conf
     from ambiguity_calculator import ambiguities_calculate
-    import itertools
-    from scipy.constants import pi as pi
-    from time import time, gmtime, strftime
-    import h5py
 
-    ambiguities_calculate(radar_name='JONES', frequency=31)
+    ambiguities_calculate(radar_name='Ydist', frequency=31)
 
 a HDF5 called JONES.h5 containing the calculation results is generated in the folder ../processed_data/JONES.
 
@@ -65,18 +57,7 @@ Continuing with JONES radar configuration, if one runs another script with
 
 ::
 
-    import os
-    import matplotlib.pyplot as plt
-    import numpy as np
-    from functions import *
-    from radarconf import radar_conf
-    from scipy.constants import pi as pi
-    from mpl_toolkits.mplot3d import Axes3D
-    from matplotlib.ticker import MaxNLocator
-    import h5py
-    from matplotlib import rc
-    rc('text', usetex=True)
-    rc('font', family='serif')
+    from plots_generator import generate_plots
 
     generate_plots(radar_name='JONES', frequency=31, elevation=50, azimuth=270)
 

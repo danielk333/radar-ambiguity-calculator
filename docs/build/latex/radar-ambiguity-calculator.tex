@@ -548,17 +548,9 @@ By running a python script with
 
 \fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{import} \PYG{n+nn}{os}
-\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
-\PYG{k+kn}{from} \PYG{n+nn}{functions} \PYG{k}{import} \PYG{o}{*}
-\PYG{k+kn}{from} \PYG{n+nn}{radarconf} \PYG{k}{import} \PYG{n}{radar\PYGZus{}conf}
 \PYG{k+kn}{from} \PYG{n+nn}{ambiguity\PYGZus{}calculator} \PYG{k}{import} \PYG{n}{ambiguities\PYGZus{}calculate}
-\PYG{k+kn}{import} \PYG{n+nn}{itertools}
-\PYG{k+kn}{from} \PYG{n+nn}{scipy}\PYG{n+nn}{.}\PYG{n+nn}{constants} \PYG{k}{import} \PYG{n}{pi} \PYG{k}{as} \PYG{n}{pi}
-\PYG{k+kn}{from} \PYG{n+nn}{time} \PYG{k}{import} \PYG{n}{time}\PYG{p}{,} \PYG{n}{gmtime}\PYG{p}{,} \PYG{n}{strftime}
-\PYG{k+kn}{import} \PYG{n+nn}{h5py}
 
-\PYG{n}{ambiguities\PYGZus{}calculate}\PYG{p}{(}\PYG{n}{radar\PYGZus{}name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{JONES}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{frequency}\PYG{o}{=}\PYG{l+m+mi}{31}\PYG{p}{)}
+\PYG{n}{ambiguities\PYGZus{}calculate}\PYG{p}{(}\PYG{n}{radar\PYGZus{}name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{Ydist}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{frequency}\PYG{o}{=}\PYG{l+m+mi}{31}\PYG{p}{)}
 \end{sphinxVerbatim}
 
 a HDF5 called JONES.h5 containing the calculation results is generated in the folder ../processed\_data/JONES.
@@ -625,18 +617,7 @@ Continuing with JONES radar configuration, if one runs another script with
 
 \fvset{hllines={, ,}}%
 \begin{sphinxVerbatim}[commandchars=\\\{\}]
-\PYG{k+kn}{import} \PYG{n+nn}{os}
-\PYG{k+kn}{import} \PYG{n+nn}{matplotlib}\PYG{n+nn}{.}\PYG{n+nn}{pyplot} \PYG{k}{as} \PYG{n+nn}{plt}
-\PYG{k+kn}{import} \PYG{n+nn}{numpy} \PYG{k}{as} \PYG{n+nn}{np}
-\PYG{k+kn}{from} \PYG{n+nn}{functions} \PYG{k}{import} \PYG{o}{*}
-\PYG{k+kn}{from} \PYG{n+nn}{radarconf} \PYG{k}{import} \PYG{n}{radar\PYGZus{}conf}
-\PYG{k+kn}{from} \PYG{n+nn}{scipy}\PYG{n+nn}{.}\PYG{n+nn}{constants} \PYG{k}{import} \PYG{n}{pi} \PYG{k}{as} \PYG{n}{pi}
-\PYG{k+kn}{from} \PYG{n+nn}{mpl\PYGZus{}toolkits}\PYG{n+nn}{.}\PYG{n+nn}{mplot3d} \PYG{k}{import} \PYG{n}{Axes3D}
-\PYG{k+kn}{from} \PYG{n+nn}{matplotlib}\PYG{n+nn}{.}\PYG{n+nn}{ticker} \PYG{k}{import} \PYG{n}{MaxNLocator}
-\PYG{k+kn}{import} \PYG{n+nn}{h5py}
-\PYG{k+kn}{from} \PYG{n+nn}{matplotlib} \PYG{k}{import} \PYG{n}{rc}
-\PYG{n}{rc}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{text}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{usetex}\PYG{o}{=}\PYG{k+kc}{True}\PYG{p}{)}
-\PYG{n}{rc}\PYG{p}{(}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{font}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{family}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{serif}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{)}
+\PYG{k+kn}{from} \PYG{n+nn}{plots\PYGZus{}generator} \PYG{k}{import} \PYG{n}{generate\PYGZus{}plots}
 
 \PYG{n}{generate\PYGZus{}plots}\PYG{p}{(}\PYG{n}{radar\PYGZus{}name}\PYG{o}{=}\PYG{l+s+s1}{\PYGZsq{}}\PYG{l+s+s1}{JONES}\PYG{l+s+s1}{\PYGZsq{}}\PYG{p}{,} \PYG{n}{frequency}\PYG{o}{=}\PYG{l+m+mi}{31}\PYG{p}{,} \PYG{n}{elevation}\PYG{o}{=}\PYG{l+m+mi}{50}\PYG{p}{,} \PYG{n}{azimuth}\PYG{o}{=}\PYG{l+m+mi}{270}\PYG{p}{)}
 \end{sphinxVerbatim}

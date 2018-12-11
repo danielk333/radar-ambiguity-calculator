@@ -74,17 +74,9 @@
 </tbody>
 </table>
 <p>By running a python script with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">functions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">radarconf</span> <span class="k">import</span> <span class="n">radar_conf</span>
-<span class="kn">from</span> <span class="nn">ambiguity_calculator</span> <span class="k">import</span> <span class="n">ambiguities_calculate</span>
-<span class="kn">import</span> <span class="nn">itertools</span>
-<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi</span>
-<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">time</span><span class="p">,</span> <span class="n">gmtime</span><span class="p">,</span> <span class="n">strftime</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ambiguity_calculator</span> <span class="k">import</span> <span class="n">ambiguities_calculate</span>
 
-<span class="n">ambiguities_calculate</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="s1">&#39;JONES&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
+<span class="n">ambiguities_calculate</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="s1">&#39;Ydist&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">31</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>a HDF5 called JONES.h5 containing the calculation results is generated in the folder ../processed_data/JONES.</p>
@@ -125,18 +117,7 @@
 <div class="section" id="use-the-results-to-see-the-ambiguities-for-a-doa">
 <h2>Use the results to see the ambiguities for a DOA.<a class="headerlink" href="#use-the-results-to-see-the-ambiguities-for-a-doa" title="Permalink to this headline">¶</a></h2>
 <p>Continuing with JONES radar configuration, if one runs another script with</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
-<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
-<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
-<span class="kn">from</span> <span class="nn">functions</span> <span class="k">import</span> <span class="o">*</span>
-<span class="kn">from</span> <span class="nn">radarconf</span> <span class="k">import</span> <span class="n">radar_conf</span>
-<span class="kn">from</span> <span class="nn">scipy.constants</span> <span class="k">import</span> <span class="n">pi</span> <span class="k">as</span> <span class="n">pi</span>
-<span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="k">import</span> <span class="n">Axes3D</span>
-<span class="kn">from</span> <span class="nn">matplotlib.ticker</span> <span class="k">import</span> <span class="n">MaxNLocator</span>
-<span class="kn">import</span> <span class="nn">h5py</span>
-<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="k">import</span> <span class="n">rc</span>
-<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;text&#39;</span><span class="p">,</span> <span class="n">usetex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">rc</span><span class="p">(</span><span class="s1">&#39;font&#39;</span><span class="p">,</span> <span class="n">family</span><span class="o">=</span><span class="s1">&#39;serif&#39;</span><span class="p">)</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">plots_generator</span> <span class="k">import</span> <span class="n">generate_plots</span>
 
 <span class="n">generate_plots</span><span class="p">(</span><span class="n">radar_name</span><span class="o">=</span><span class="s1">&#39;JONES&#39;</span><span class="p">,</span> <span class="n">frequency</span><span class="o">=</span><span class="mi">31</span><span class="p">,</span> <span class="n">elevation</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">azimuth</span><span class="o">=</span><span class="mi">270</span><span class="p">)</span>
 </pre></div>
