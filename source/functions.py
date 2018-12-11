@@ -256,9 +256,10 @@ def explicit(intersection_line, intersections_ind, cap_intersections_of_slines, 
     :param cap_intersections_of_slines: cap?
     :param xy: xy coordinates of radar subgroups
     :param k0: signal wave vector
-    :return ambiguity_distances_explicit: ambiguity distances
-    :return ambiguity_normal_explicit:
-    :return k_finds:
+    :returns:
+        * **ambiguity_distances_explicit** - ambiguity distances
+        * **ambiguity_normal_explicit** -
+        * **k_finds** -
     """
 
     s_sel = intersection_line[:, intersections_ind[cap_intersections_of_slines]]
